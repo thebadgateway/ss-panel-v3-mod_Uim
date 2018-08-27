@@ -58,7 +58,7 @@ function install_ss_panel_mod_UIm(){
 	# mysql -uroot -proot -e"create database sspanel;" 
 	# mysql -uroot -proot -e"use sspanel;" 
 	# mysql -uroot -proot sspanel < /home/wwwroot/default/sql/sspanel.sql
-	mysql -hlocalhost -uroot -proot --default-character-set=utf8mb4<<EOF
+	mysql -hlocalhost -uroot -proot <<EOF
 create database ssrpanel;
 use ssrpanel;
 source /home/wwwroot/default/sql/sspanel.sql;
