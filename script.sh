@@ -57,8 +57,8 @@ function install_ss_panel_mod_UIm(){
 	# mysql -uroot -proot -e"use sspanel;" 
 	# mysql -uroot -proot sspanel < /home/wwwroot/default/sql/sspanel.sql
 	mysql -hlocalhost -uroot -proot <<EOF
-create database ssrpanel;
-use ssrpanel;
+create database sspanel;
+use sspanel;
 source /home/wwwroot/default/sql/sspanel.sql;
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'root' WITH GRANT OPTION;
 flush privileges;
