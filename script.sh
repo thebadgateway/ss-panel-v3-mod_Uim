@@ -21,7 +21,7 @@ function check_system(){
 		release="centos"
     fi
 	bit=`uname -m`
-	if [[ ${release} = "centos" ]] && [[ ${bit} == "x86_64" ]]; then
+	if [[ ${release} == "centos" ]] && [[ ${bit} == "x86_64" ]]; then
 	echo -e "你的系统为[${release} ${bit}],检测\033[32m 可以 \033[0m搭建。"
 	else 
 	echo -e "你的系统为[${release} ${bit}],检测\033[31m 不可以 \033[0m搭建。"
