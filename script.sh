@@ -37,6 +37,7 @@ function install_ss_panel_mod_UIm(){
 	cp -r default/phpmyadmin/ .  #复制数据库
 	cd default
 	rm -rf index.html
+	yum update nss curl iptables -y
 	#克隆项目
 	git clone https://github.com/marisn2017/ss-panel-v3-mod_Uim-resource.git tmp && mv tmp/.git . && rm -rf tmp && git reset --hard
 	#复制配置文件
