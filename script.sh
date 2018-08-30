@@ -56,6 +56,8 @@ function install_ss_panel_mod_UIm(){
 	#下载配置文件
 	wget -N -P  /usr/local/nginx/conf/ --no-check-certificate "https://raw.githubusercontent.com/marisn2017/ss-panel-v3-mod_Uim/master/nginx.conf"
 	wget -N -P /usr/local/php/etc/ --no-check-certificate "https://raw.githubusercontent.com/marisn2017/ss-panel-v3-mod_Uim/master/php.ini"
+	#开启scandir()函数
+	sed -i 's/,scandir//g' /usr/local/php/etc/php.ini
 	service nginx restart #重启Nginx
 	# mysql -uroot -proot -e"create database sspanel;" 
 	# mysql -uroot -proot -e"use sspanel;" 
