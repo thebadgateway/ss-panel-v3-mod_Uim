@@ -74,7 +74,8 @@ EOF
 	php composer.phar install
 	mv tool/alipay-f2fpay vendor/
 	mv -f tool/cacert.pem vendor/guzzle/guzzle/src/Guzzle/Http/Resources/
-	mv -f tool/autoload_classmap.php vendor/composer/
+	#mv -f tool/autoload_classmap.php vendor/composer/
+	wget -N -P  /home/wwwroot/default/vendor/composer --no-check-certificate "https://raw.githubusercontent.com/marisn2017/ss-panel-v3-mod_Uim/master/autoload_classmap.php"
 	php xcat syncusers            #同步用户
 	php xcat initQQWry            #下载IP解析库
 	php xcat resetTraffic         #重置流量
