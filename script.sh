@@ -42,13 +42,17 @@ function install_ss_panel_mod_UIm(){
 	git clone https://github.com/marisn2017/ss-panel-v3-mod_Uim-resource.git tmp && mv tmp/.git . && rm -rf tmp && git reset --hard
 	#复制配置文件
 	# cp config/.config.php.example config/.config.php
-	#设置文件权限
+	#移除防跨站攻击(open_basedir)
+	cd /home/wwwroot/default
 	chattr -i .user.ini
-	mv .user.ini public
+	rm -rf .user.ini
+	sed -i 's/^fastcgi_param PHP_ADMIN_VALUE/#fastcgi_param PHP_ADMIN_VALUE/g' /usr/local/nginx/conf/fastcgi.conf
+    /etc/init.d/php-fpm restart
+    /etc/init.d/nginx reload
+	#设置文件权限
 	chown -R root:root *
 	chmod -R 777 *
 	chown -R www:www storage
-	chattr +i public/.user.ini
 	#下载配置文件
 	wget -N -P  /usr/local/nginx/conf/ --no-check-certificate "https://raw.githubusercontent.com/marisn2017/ss-panel-v3-mod_Uim/master/nginx.conf"
 	wget -N -P /usr/local/php/etc/ --no-check-certificate "https://raw.githubusercontent.com/marisn2017/ss-panel-v3-mod_Uim/master/php.ini"
@@ -66,13 +70,13 @@ EOF
 	cd /home/wwwroot/default
 	#安装composer
 	php composer.phar install
+	mv tool/alipay-f2fpay vendor/
+	mv -f tool/cacert.pem vendor/guzzle/guzzle/src/Guzzle/Http/Resources/
+	mv -f tool/autoload_classmap.php vendor/composer/
 	php xcat syncusers            #同步用户
 	php xcat initQQWry            #下载IP解析库
 	php xcat resetTraffic         #重置流量
 	php xcat initdownload         #下载ssr程式
-	mv tool/alipay-f2fpay vendor/
-	mv -f tool/cacert.pem vendor/guzzle/guzzle/src/Guzzle/Http/Resources/
-	mv -f tool/autoload_classmap.php vendor/composer/
 	#创建监控
 	yum -y install vixie-cron crontabs
 	rm -rf /var/spool/cron/root
