@@ -98,17 +98,7 @@ EOF
 	echo "安装失败，请格盘重装~"
 	fi
 }
-# 一键添加SS-panel节点
-function install_centos_ssr(){
-	yum -y update
-	yum -y install git 
-	yum -y install python-setuptools && easy_install pip 
-	yum -y groupinstall "Development Tools" 
-	dd if=/dev/zero of=/var/swap bs=1024 count=1048576
-	mkswap /var/swap
-	chmod 0644 /var/swap
-	swapon /var/swap
-	echo '/var/swap   swap   swap   default 0 0' >> /etc/fstab
+function Libtest(){
 	#自动选择下载节点
 	GIT='raw.githubusercontent.com'
 	LIB='download.libsodium.org'
@@ -122,33 +112,182 @@ function install_centos_ssr(){
 	else
 		libAddr='https://download.libsodium.org/libsodium/releases/libsodium-1.0.13.tar.gz'
 	fi
+	rm -f ping.pl		
+}
+function Get_Dist_Version()
+{
+    if [ -s /usr/bin/python3 ]; then
+        Version=`/usr/bin/python3 -c 'import platform; print(platform.linux_distribution()[1][0])'`
+    elif [ -s /usr/bin/python2 ]; then
+        Version=`/usr/bin/python2 -c 'import platform; print platform.linux_distribution()[1][0]'`
+    fi
+}
+function python_test(){
+	#测速决定使用哪个源
+	tsinghua='pypi.tuna.tsinghua.edu.cn'
+	pypi='mirror-ord.pypi.io'
+	doubanio='pypi.doubanio.com'
+	pubyun='pypi.pubyun.com'	
+	tsinghua_PING=`ping -c 1 -w 1 $tsinghua|grep time=|awk '{print $8}'|sed "s/time=//"`
+	pypi_PING=`ping -c 1 -w 1 $pypi|grep time=|awk '{print $8}'|sed "s/time=//"`
+	doubanio_PING=`ping -c 1 -w 1 $doubanio|grep time=|awk '{print $8}'|sed "s/time=//"`
+	pubyun_PING=`ping -c 1 -w 1 $pubyun|grep time=|awk '{print $8}'|sed "s/time=//"`
+	echo "$tsinghua_PING $tsinghua" > ping.pl
+	echo "$pypi_PING $pypi" >> ping.pl
+	echo "$doubanio_PING $doubanio" >> ping.pl
+	echo "$pubyun_PING $pubyun" >> ping.pl
+	pyAddr=`sort -V ping.pl|sed -n '1p'|awk '{print $2}'`
+	if [ "$pyAddr" == "$tsinghua" ]; then
+		pyAddr='https://pypi.tuna.tsinghua.edu.cn/simple'
+	elif [ "$pyAddr" == "$pypi" ]; then
+		pyAddr='https://mirror-ord.pypi.io/simple'
+	elif [ "$pyAddr" == "$doubanio" ]; then
+		pyAddr='http://pypi.doubanio.com/simple --trusted-host pypi.doubanio.com'
+	elif [ "$pyAddr" == "$pubyun_PING" ]; then
+		pyAddr='http://pypi.pubyun.com/simple --trusted-host pypi.pubyun.com'
+	fi
 	rm -f ping.pl
+}
+# 一键添加SS-panel节点
+function install_centos_ssr(){
+	cd /root
+	Get_Dist_Version
+	if [ $Version == "7" ]; then
+		wget --no-check-certificate https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm 
+		rpm -ivh epel-release-latest-7.noarch.rpm	
+	else
+		wget --no-check-certificate https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+		rpm -ivh epel-release-latest-6.noarch.rpm
+	fi
+	rm -rf *.rpm
+	yum -y update --exclude=kernel*	
+	yum -y install git gcc python-setuptools lsof lrzsz python-devel libffi-devel openssl-devel iptables
+	yum -y update nss curl libcurl 
+	yum -y groupinstall "Development Tools" 
+	#第一次yum安装 supervisor pip
+	yum -y install supervisor python-pip
+	supervisord
+	#第二次pip supervisor是否安装成功
+	if [ -z "`pip`" ]; then
+    curl -O https://bootstrap.pypa.io/get-pip.py
+		python get-pip.py 
+		rm -rf *.py
+	fi
+	if [ -z "`ps aux|grep supervisord|grep python`" ]; then
+    pip install supervisor
+    supervisord
+	fi
+	#第三次检测pip supervisor是否安装成功
+	if [ -z "`pip`" ]; then
+		if [ -z "`easy_install`"]; then
+    wget http://peak.telecommunity.com/dist/ez_setup.py
+		python ez_setup.py
+		fi		
+		easy_install pip
+	fi
+	if [ -z "`ps aux|grep supervisord|grep python`" ]; then
+    easy_install supervisor
+    supervisord
+	fi
+	pip install --upgrade pip
+	Libtest
 	wget --no-check-certificate $libAddr
 	tar xf libsodium-1.0.13.tar.gz && cd libsodium-1.0.13
 	./configure && make -j2 && make install
 	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 	ldconfig
-	yum -y install python-setuptools
-	easy_install supervisor
-	cd /root
 	git clone -b manyuser https://github.com/glzjin/shadowsocks.git "/root/shadowsocks"
 	cd /root/shadowsocks
-	yum -y install lsof lrzsz
-	yum -y install python-devel
-	yum -y install libffi-devel
-	yum -y install openssl-devel
-	pip install -r requirements.txt
+	chkconfig supervisord on
+	#第一次安装
+	python_test
+	pip install -r requirements.txt -i $pyAddr	
+	#第二次检测是否安装成功
+	if [ -z "`python -c 'import requests;print(requests)'`" ]; then
+		pip install -r requirements.txt #用自带的源试试再装一遍
+	fi
+	#第三次检测是否成功
+	if [ -z "`python -c 'import requests;print(requests)'`" ]; then
+	    cd /root && mkdir python && cd python
+		git clone https://github.com/shazow/urllib3.git && cd urllib3
+		python setup.py install && cd ..
+		git clone https://github.com/nakagami/CyMySQL.git && cd CyMySQL
+		python setup.py install && cd ..
+		git clone https://github.com/requests/requests.git && cd requests
+		python setup.py install && cd ..
+		git clone https://github.com/pyca/pyopenssl.git && cd pyopenssl
+		python setup.py install && cd ..
+		git clone https://github.com/cedadev/ndg_httpsclient.git && cd ndg_httpsclient
+		python setup.py install && cd ..
+		git clone https://github.com/etingof/pyasn1.git && cd pyasn1
+		python setup.py install && cd ..
+		rm -rf python
+	fi	
+	systemctl stop firewalld.service
+	systemctl disable firewalld.service
+	cd /root/shadowsocks
 	cp apiconfig.py userapiconfig.py
 	cp config.json user-config.json
 }
+function install_ubuntu_ssr(){
+	apt-get update -y
+	apt-get install supervisor lsof -y
+	apt-get install build-essential wget -y
+	apt-get install iptables git -y
+	Libtest
+	wget --no-check-certificate $libAddr
+	tar xf libsodium-1.0.13.tar.gz && cd libsodium-1.0.13
+	./configure && make -j2 && make install
+	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
+	ldconfig
+	apt-get install python-pip git -y
+	pip install cymysql
+	cd /root
+	git clone -b manyuser https://github.com/glzjin/shadowsocks.git "/root/shadowsocks"
+	cd shadowsocks
+	pip install -r requirements.txt
+	chmod +x *.sh
+	# 配置程序
+	cp apiconfig.py userapiconfig.py
+	cp config.json user-config.json
+}
+
 function install_node(){
 	clear
+	#Check Root
+	[ $(id -u) != "0" ] && { echo "Error: You must be root to run this script"; exit 1; }
+	#check OS version
+	check_sys(){
+		if [[ -f /etc/redhat-release ]]; then
+			release="centos"
+		elif cat /etc/issue | grep -q -E -i "debian"; then
+			release="debian"
+		elif cat /etc/issue | grep -q -E -i "ubuntu"; then
+			release="ubuntu"
+		elif cat /etc/issue | grep -q -E -i "centos|red hat|redhat"; then
+			release="centos"
+		elif cat /proc/version | grep -q -E -i "debian"; then
+			release="debian"
+		elif cat /proc/version | grep -q -E -i "ubuntu"; then
+			release="ubuntu"
+		elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
+			release="centos"
+	  fi
+	}
+	install_ssr_for_each(){
+		check_sys
+		if [[ ${release} = "centos" ]]; then
+			install_centos_ssr
+		else
+			install_ubuntu_ssr
+		fi
+	}
 	# 取消文件数量限制
 	sed -i '$a * hard nofile 512000\n* soft nofile 512000' /etc/security/limits.conf
-	read -p "请输入你的对接域名或IP(请加上http:// 如果是本机请直接回车): " Userdomain
+	read -p "请输入你的对接域名或IP(eg:http://www.baidu.com 如果是本机请直接回车): " Userdomain
 	read -p "请输入muKey(在你的配置文件中 如果是本机请直接回车):" Usermukey
 	read -p "请输入你的节点编号(非常重要，必须填，不能回车):  " UserNODE_ID
-	install_centos_ssr
+	install_ssr_for_each
 	IPAddress=`wget http://members.3322.org/dyndns/getip -O - -q ; echo`;
 	cd /root/shadowsocks
 	echo -e "modify Config.py...\n"
@@ -160,8 +299,9 @@ function install_node(){
 	sed -i '2d' /root/shadowsocks/userapiconfig.py
 	sed -i "2a\NODE_ID = ${UserNODE_ID}" /root/shadowsocks/userapiconfig.py
 	# 启用supervisord守护
-	echo_supervisord_conf > /etc/supervisord.conf
-  sed -i '$a [program:ssr]\ncommand = python /root/shadowsocks/server.py\nuser = root\nautostart = true\nautorestart = true' /etc/supervisord.conf
+	supervisorctl shutdown
+	#某些机器没有echo_supervisord_conf
+	wget -N -P  /etc/ --no-check-certificate  https://raw.githubusercontent.com/marisn2017/ss-panel-v3-mod_Uim/master/supervisord.conf	
 	supervisord
 	#iptables
 	iptables -F
