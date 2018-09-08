@@ -5,7 +5,7 @@
 #!/bin/bash
 
 #常规变量
-update_time = "2018年9月8日09:31:27"
+update_time="2018年9月8日09:31:27"
 config="/root/shadowsocks/userapiconfig.py"
 
 #fonts color
