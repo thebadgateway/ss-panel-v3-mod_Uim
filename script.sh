@@ -3,6 +3,26 @@
 #Blog: blog.67cc.cn
 #Time：2018-8-25 11:05:33
 #!/bin/bash
+
+#常规变量
+update_time = "2018年9月8日09:31:27"
+config="/root/shadowsocks/userapiconfig.py"
+
+#fonts color
+Green="\033[32m" 
+Red="\033[31m" 
+Yellow="\033[33m"
+GreenBG="\033[42;37m"
+RedBG="\033[41;37m"
+Font="\033[0m"
+
+#notification information
+Info="${Green}[Info]${Font}"
+OK="${Green}[OK]${Font}"
+Error="${Red}[Error]${Font}"
+Notification="${Yellow}[Notification]${Font}"
+
+#check root
 [ $(id -u) != "0" ] && { echo "错误: 您必须以root用户运行此脚本"; exit 1; }
 function check_system(){
 	if [[ -f /etc/redhat-release ]]; then
@@ -22,10 +42,10 @@ function check_system(){
     fi
 	bit=`uname -m`
 	if [[ ${release} == "centos" ]] && [[ ${bit} == "x86_64" ]]; then
-	echo -e "你的系统为[${release} ${bit}],检测\033[32m 可以 \033[0m搭建。"
+	echo -e "你的系统为[${release} ${bit}],检测${Green} 可以 ${Font}搭建。"
 	else 
-	echo -e "你的系统为[${release} ${bit}],检测\033[31m 不可以 \033[0m搭建。"
-	echo -e "\033[31m 正在退出脚本... \033[0m"
+	echo -e "你的系统为[${release} ${bit}],检测${Red} 不可以 ${Font}搭建。"
+	echo -e "${Yellow} 正在退出脚本... ${Font}"
 	exit 0;
 	fi
 }
@@ -93,9 +113,9 @@ EOF
 	/sbin/service crond restart
 	if [ -d "/home/wwwroot/default/" ];then
 	clear
-	echo "ss-panel-v3-mod_UIChanges安装成功~"
+	echo "${Green}ss-panel-v3-mod_UIChanges安装成功~${Font}"
 	else
-	echo "安装失败，请格盘重装~"
+	echo "${Red}安装失败，请格盘重装~${Font}"
 	fi
 }
 function Libtest(){
@@ -196,6 +216,8 @@ function install_centos_ssr(){
 	./configure && make -j2 && make install
 	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 	ldconfig
+	#清理文件
+	rm -rf libsodium*
 	git clone -b manyuser https://github.com/glzjin/shadowsocks.git "/root/shadowsocks"
 	cd /root/shadowsocks
 	chkconfig supervisord on
@@ -284,20 +306,27 @@ function install_node(){
 	}
 	# 取消文件数量限制
 	sed -i '$a * hard nofile 512000\n* soft nofile 512000' /etc/security/limits.conf
-	read -p "请输入你的对接域名或IP(eg:http://www.baidu.com 如果是本机请直接回车): " Userdomain
-	read -p "请输入muKey(在你的配置文件中 如果是本机请直接回车):" Usermukey
-	read -p "请输入你的节点编号(非常重要，必须填，不能回车):  " UserNODE_ID
+	echo -e "如果以下手动配置错误，请在${config}手动编辑修改"
+	read -p "请输入你的对接域名或IP(例如:http://www.baidu.com 如果是本机请直接回车): " WEBAPI_URL
+	read -p "请输入muKey(在你的配置文件中 如果是本机请直接回车):" WEBAPI_TOKEN
+	read -p "请输入测速周期(回车默认为每6小时测速):" SPEEDTEST
+	read -p "请输入你的节点编号(非常重要，必须填，不能回车):  " NODE_ID
 	install_ssr_for_each
 	IPAddress=`wget http://members.3322.org/dyndns/getip -O - -q ; echo`;
 	cd /root/shadowsocks
 	echo -e "modify Config.py...\n"
-	Userdomain=${Userdomain:-"http://${IPAddress}"}
-	sed -i "s#https://zhaoj.in#${Userdomain}#" /root/shadowsocks/userapiconfig.py
-	Usermukey=${Usermukey:-"marisn"}
-	sed -i "s#glzjin#${Usermukey}#" /root/shadowsocks/userapiconfig.py
-	UserNODE_ID=${UserNODE_ID:-"3"}
-	sed -i '2d' /root/shadowsocks/userapiconfig.py
-	sed -i "2a\NODE_ID = ${UserNODE_ID}" /root/shadowsocks/userapiconfig.py
+	WEBAPI_URL=${WEBAPI_URL:-"http://${IPAddress}"}
+	sed -i '/WEBAPI_URL/c \WEBAPI_URL = '\'${WEBAPI_URL}\''' ${config}
+	#sed -i "s#https://zhaoj.in#${WEBAPI_URL}#" /root/shadowsocks/userapiconfig.py
+	WEBAPI_TOKEN=${WEBAPI_TOKEN:-"marisn"}
+	sed -i '/WEBAPI_TOKEN/c \WEBAPI_TOKEN = '\'${WEBAPI_TOKEN}\''' ${config}
+	#sed -i "s#glzjin#${WEBAPI_TOKEN}#" /root/shadowsocks/userapiconfig.py
+	SPEEDTEST=${SPEEDTEST:-"6"}
+	sed -i '/SPEED/c \SPEEDTEST = '${SPEEDTEST}'' ${config}
+	NODE_ID=${NODE_ID:-"3"}
+	sed -i '/NODE_ID/c \NODE_ID = '${NODE_ID}'' ${config}
+	#sed -i '2d' /root/shadowsocks/userapiconfig.py
+	#sed -i "2a\NODE_ID = ${NODE_ID}" /root/shadowsocks/userapiconfig.py
 	# 启用supervisord守护
 	supervisorctl shutdown
 	#某些机器没有echo_supervisord_conf
@@ -336,10 +365,11 @@ echo -e "\033[34m#Blog: http://blog.67cc.cn/                                 #\0
 echo -e "\033[35m#请选择你要搭建的脚本：                                     #\033[0m"
 echo -e "\033[36m#1.  一键ss-panel-v3-mod_UIChanges搭建                      #\033[0m"
 echo -e "\033[37m#2.  一键添加SS-panel节点                                   #\033[0m"
-echo -e "\033[37m#3.  一键  BBR加速  搭建                                    #\033[0m"
-echo -e "\033[36m#4.  一键锐速破解版搭建                                     #\033[0m"
-echo -e "\033[33m#                              PS:建议先搭建加速再搭建面板  #\033[0m"
-echo -e "\033[32m#                                   支持   Centos  7.x  系统#\033[0m"
+echo -e "\033[36m#3.  一键  BBR加速  搭建                                    #\033[0m"
+echo -e "\033[35m#4.  一键锐速破解版搭建                                     #\033[0m"
+echo -e "\033[34m#                                PS:建议先搭建加速再搭建面板#\033[0m"
+echo -e "\033[33m#                                   支持   Centos  7.x  系统#\033[0m"
+echo -e "\033[32m#                              最后更新时间：${update_time} #\033[0m"
 echo -e "\033[31m#############################################################\033[0m"
 echo
 read num
