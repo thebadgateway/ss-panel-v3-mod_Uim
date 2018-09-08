@@ -4,24 +4,6 @@
 #Time：2018-8-25 11:05:33
 #!/bin/bash
 
-#常规变量
-update_time="2018年9月8日09:31:27"
-config="/root/shadowsocks/userapiconfig.py"
-
-#fonts color
-Green="\033[32m" 
-Red="\033[31m" 
-Yellow="\033[33m"
-GreenBG="\033[42;37m"
-RedBG="\033[41;37m"
-Font="\033[0m"
-
-#notification information
-Info="${Green}[Info]${Font}"
-OK="${Green}[OK]${Font}"
-Error="${Red}[Error]${Font}"
-Notification="${Yellow}[Notification]${Font}"
-
 #check root
 [ $(id -u) != "0" ] && { echo "错误: 您必须以root用户运行此脚本"; exit 1; }
 function check_system(){
@@ -352,6 +334,25 @@ function install_BBR(){
 function install_RS(){
      wget -N --no-check-certificate https://github.com/91yun/serverspeeder/raw/master/serverspeeder.sh && bash serverspeeder.sh
 }
+
+#常规变量
+update_time="2018年9月8日09:31:27"
+config="/root/shadowsocks/userapiconfig.py"
+
+#fonts color
+Green="\033[32m" 
+Red="\033[31m" 
+Yellow="\033[33m"
+GreenBG="\033[42;37m"
+RedBG="\033[41;37m"
+Font="\033[0m"
+
+#notification information
+Info="${Green}[Info]${Font}"
+OK="${Green}[OK]${Font}"
+Error="${Red}[Error]${Font}"
+Notification="${Yellow}[Notification]${Font}"
+
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 ulimit -c 0
@@ -369,7 +370,7 @@ echo -e "\033[36m#3.  一键  BBR加速  搭建                                 
 echo -e "\033[35m#4.  一键锐速破解版搭建                                     #\033[0m"
 echo -e "\033[34m#                                PS:建议先搭建加速再搭建面板#\033[0m"
 echo -e "\033[33m#                                   支持   Centos  7.x  系统#\033[0m"
-echo -e "\033[32m#                              最后更新时间：${update_time} #\033[0m"
+echo -e "${Green}#                              最后更新时间：${update_time} #${Font}"
 echo -e "\033[31m#############################################################\033[0m"
 echo
 read num
