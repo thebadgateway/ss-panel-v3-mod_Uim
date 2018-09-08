@@ -370,7 +370,7 @@ echo -e "\033[36m#3.  一键  BBR加速  搭建                                 
 echo -e "\033[35m#4.  一键锐速破解版搭建                                     #\033[0m"
 echo -e "\033[34m#                                PS:建议先搭建加速再搭建面板#\033[0m"
 echo -e "\033[33m#                                   支持   Centos  7.x  系统#\033[0m"
-echo -e "${Green}#                              最后更新时间：${update_time} #${Font}"
+echo -e "${Green}#                       最后更新时间：${update_time} #${Font}"
 echo -e "\033[31m#############################################################\033[0m"
 echo
 read num
