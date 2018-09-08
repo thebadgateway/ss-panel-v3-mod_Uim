@@ -360,17 +360,17 @@ rm -rf script*
 clear
 check_system
 sleep 2
+echo -e "脚本最后更新时间：${Green} ${update_time} ${Font}"
 echo -e "\033[31m#############################################################\033[0m"
 echo -e "\033[32m#欢迎使用一键ss-panel-v3-mod_UIChanges搭建脚本 and 节点添加 #\033[0m"
 echo -e "\033[34m#Blog: http://blog.67cc.cn/                                 #\033[0m"
 echo -e "\033[35m#请选择你要搭建的脚本：                                     #\033[0m"
 echo -e "\033[36m#1.  一键ss-panel-v3-mod_UIChanges搭建                      #\033[0m"
-echo -e "\033[37m#2.  一键添加SS-panel节点                                   #\033[0m"
-echo -e "\033[36m#3.  一键  BBR加速  搭建                                    #\033[0m"
-echo -e "\033[35m#4.  一键锐速破解版搭建                                     #\033[0m"
-echo -e "\033[34m#                                PS:建议先搭建加速再搭建面板#\033[0m"
-echo -e "\033[33m#                                   支持   Centos  7.x  系统#\033[0m"
-echo -e "${Green}#                       最后更新时间：${update_time} #${Font}"
+echo -e "\033[36m#2.  一键添加SS-panel节点                                   #\033[0m"
+echo -e "\033[35m#3.  一键  BBR加速  搭建                                    #\033[0m"
+echo -e "\033[34m#4.  一键锐速破解版搭建                                     #\033[0m"
+echo -e "\033[33m#                                PS:建议先搭建加速再搭建面板#\033[0m"
+echo -e "\033[32m#                                   支持   Centos  7.x  系统#\033[0m"
 echo -e "\033[31m#############################################################\033[0m"
 echo
 read num
