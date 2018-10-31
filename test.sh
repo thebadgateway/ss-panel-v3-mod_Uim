@@ -99,7 +99,7 @@ EOF
 	clear
 	echo "${Green}ss-panel-v3-mod_UIChanges安装成功~${Font}"
 	echo
-	echo -e "\033[1;5;31m请手动运行php xcat createAdmin创建管理用户\033[0m"
+	echo -e "\033[1;5;31m请手动运行cd /home/wwwroot/default && php xcat createAdmin创建管理用户\033[0m"
 	else
 	echo "${Red}安装失败，请格盘重装~${Font}"
 	fi
