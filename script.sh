@@ -100,7 +100,19 @@ EOF
 	echo "${Red}安装失败，请格盘重装~${Font}"
 	fi
 }
-function Libtest(){
+
+# 一键添加SS-panel节点
+function install_centos_ssr(){
+	yum -y update
+	yum -y install git 
+	yum -y install python-setuptools && easy_install pip 
+	yum -y groupinstall "Development Tools" 
+	#512M chicks add 1 g of Swap
+	dd if=/dev/zero of=/var/swap bs=1024 count=1048576
+	mkswap /var/swap
+	chmod 0644 /var/swap
+	swapon /var/swap
+	echo '/var/swap   swap   swap   default 0 0' >> /etc/fstab
 	#自动选择下载节点
 	GIT='raw.githubusercontent.com'
 	LIB='download.libsodium.org'
@@ -114,144 +126,22 @@ function Libtest(){
 	else
 		libAddr='https://download.libsodium.org/libsodium/releases/libsodium-1.0.16.tar.gz'
 	fi
-	rm -f ping.pl		
-}
-function Get_Dist_Version()
-{
-    if [ -s /usr/bin/python3 ]; then
-        Version=`/usr/bin/python3 -c 'import platform; print(platform.linux_distribution()[1][0])'`
-    elif [ -s /usr/bin/python2 ]; then
-        Version=`/usr/bin/python2 -c 'import platform; print platform.linux_distribution()[1][0]'`
-    fi
-}
-function python_test(){
-	#测速决定使用哪个源
-	tsinghua='pypi.tuna.tsinghua.edu.cn'
-	pypi='mirror-ord.pypi.io'
-	doubanio='pypi.doubanio.com'
-	pubyun='pypi.pubyun.com'	
-	tsinghua_PING=`ping -c 1 -w 1 $tsinghua|grep time=|awk '{print $8}'|sed "s/time=//"`
-	pypi_PING=`ping -c 1 -w 1 $pypi|grep time=|awk '{print $8}'|sed "s/time=//"`
-	doubanio_PING=`ping -c 1 -w 1 $doubanio|grep time=|awk '{print $8}'|sed "s/time=//"`
-	pubyun_PING=`ping -c 1 -w 1 $pubyun|grep time=|awk '{print $8}'|sed "s/time=//"`
-	echo "$tsinghua_PING $tsinghua" > ping.pl
-	echo "$pypi_PING $pypi" >> ping.pl
-	echo "$doubanio_PING $doubanio" >> ping.pl
-	echo "$pubyun_PING $pubyun" >> ping.pl
-	pyAddr=`sort -V ping.pl|sed -n '1p'|awk '{print $2}'`
-	if [ "$pyAddr" == "$tsinghua" ]; then
-		pyAddr='https://pypi.tuna.tsinghua.edu.cn/simple'
-	elif [ "$pyAddr" == "$pypi" ]; then
-		pyAddr='https://mirror-ord.pypi.io/simple'
-	elif [ "$pyAddr" == "$doubanio" ]; then
-		pyAddr='http://pypi.doubanio.com/simple --trusted-host pypi.doubanio.com'
-	elif [ "$pyAddr" == "$pubyun_PING" ]; then
-		pyAddr='http://pypi.pubyun.com/simple --trusted-host pypi.pubyun.com'
-	fi
 	rm -f ping.pl
-}
-# 一键添加SS-panel节点
-function install_centos_ssr(){
-	cd /root
-	Get_Dist_Version
-	if [ $Version == "7" ]; then
-		wget --no-check-certificate https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm 
-		rpm -ivh epel-release-latest-7.noarch.rpm	
-	else
-		wget --no-check-certificate https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
-		rpm -ivh epel-release-latest-6.noarch.rpm
-	fi
-	rm -rf *.rpm
-	yum -y update --exclude=kernel*	
-	yum -y install git gcc python-setuptools lsof lrzsz python-devel libffi-devel openssl-devel iptables
-	yum -y update nss curl libcurl 
-	yum -y groupinstall "Development Tools" 
-	#第一次yum安装 supervisor pip
-	yum -y install supervisor python-pip
-	supervisord
-	#第二次pip supervisor是否安装成功
-	if [ -z "`pip`" ]; then
-    curl -O https://bootstrap.pypa.io/get-pip.py
-		python get-pip.py 
-		rm -rf *.py
-	fi
-	if [ -z "`ps aux|grep supervisord|grep python`" ]; then
-    pip install supervisor
-    supervisord
-	fi
-	#第三次检测pip supervisor是否安装成功
-	if [ -z "`pip`" ]; then
-		if [ -z "`easy_install`"]; then
-    wget http://peak.telecommunity.com/dist/ez_setup.py
-		python ez_setup.py
-		fi		
-		easy_install pip
-	fi
-	if [ -z "`ps aux|grep supervisord|grep python`" ]; then
-    easy_install supervisor
-    supervisord
-	fi
-	pip install --upgrade pip
-	Libtest
 	wget --no-check-certificate $libAddr
 	tar xf libsodium-1.0.13.tar.gz && cd libsodium-1.0.13
 	./configure && make -j2 && make install
 	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 	ldconfig
+	yum -y install python-setuptools
+	easy_install supervisor
 	#清理文件
 	cd /root && rm -rf libsodium*
 	git clone -b manyuser https://github.com/glzjin/shadowsocks.git "/root/shadowsocks"
+	cd /root/shadowsocks && chomd 0777 *
+	yum -y install lsof lrzsz iptables openssl-devel libffi-devel python-devel
+	systemctl stop firewalld.service #停止firewall
+    systemctl disable firewalld.service #禁止firewall开机启动
 	cd /root/shadowsocks
-	chkconfig supervisord on
-	#第一次安装
-	python_test
-	pip install -r requirements.txt -i $pyAddr	
-	#第二次检测是否安装成功
-	if [ -z "`python -c 'import requests;print(requests)'`" ]; then
-		pip install -r requirements.txt #用自带的源试试再装一遍
-	fi
-	#第三次检测是否成功
-	if [ -z "`python -c 'import requests;print(requests)'`" ]; then
-	    cd /root && mkdir python && cd python
-		git clone https://github.com/shazow/urllib3.git && cd urllib3
-		python setup.py install && cd ..
-		git clone https://github.com/nakagami/CyMySQL.git && cd CyMySQL
-		python setup.py install && cd ..
-		git clone https://github.com/requests/requests.git && cd requests
-		python setup.py install && cd ..
-		git clone https://github.com/pyca/pyopenssl.git && cd pyopenssl
-		python setup.py install && cd ..
-		git clone https://github.com/cedadev/ndg_httpsclient.git && cd ndg_httpsclient
-		python setup.py install && cd ..
-		git clone https://github.com/etingof/pyasn1.git && cd pyasn1
-		python setup.py install && cd ..
-		rm -rf python
-	fi	
-	systemctl stop firewalld.service
-	systemctl disable firewalld.service
-	cd /root/shadowsocks
-	cp apiconfig.py userapiconfig.py
-	cp config.json user-config.json
-}
-function install_ubuntu_ssr(){
-	apt-get update -y
-	apt-get install supervisor lsof -y
-	apt-get install build-essential wget -y
-	apt-get install iptables git -y
-	Libtest
-	wget --no-check-certificate $libAddr
-	tar xf libsodium-1.0.13.tar.gz && cd libsodium-1.0.13
-	./configure && make -j2 && make install
-	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
-	ldconfig
-	apt-get install python-pip git -y
-	pip install cymysql
-	cd /root
-	git clone -b manyuser https://github.com/glzjin/shadowsocks.git "/root/shadowsocks"
-	cd shadowsocks
-	pip install -r requirements.txt
-	chmod +x *.sh
-	# 配置程序
 	cp apiconfig.py userapiconfig.py
 	cp config.json user-config.json
 }
@@ -283,7 +173,8 @@ function install_node(){
 		if [[ ${release} = "centos" ]]; then
 			install_centos_ssr
 		else
-			install_ubuntu_ssr
+			echo -e "请检查系统是否正确"
+			exit;
 		fi
 	}
 	# 取消文件数量限制
