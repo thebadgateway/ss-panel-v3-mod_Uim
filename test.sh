@@ -116,7 +116,7 @@ function Libtest(){
 	if [ "$libAddr" == "$GIT" ];then
 		libAddr='https://raw.githubusercontent.com/marisn2017/ss-panel-v3-mod_Uim/master/libsodium-1.0.13.tar.gz'
 	else
-		libAddr='https://download.libsodium.org/libsodium/releases/libsodium-1.0.13.tar.gz'
+		libAddr='https://download.libsodium.org/libsodium/releases/libsodium-1.0.16.tar.gz'
 	fi
 	rm -f ping.pl		
 }
