@@ -66,7 +66,7 @@ node_install_start(){
 	cp config.json user-config.json
 }
 api(){
-	node_install_start
+    clear
 	# 取消文件数量限制
 	sed -i '$a * hard nofile 512000\n* soft nofile 512000' /etc/security/limits.conf
 	echo -e "如果以下手动配置错误，请在${config}手动编辑修改"
@@ -74,6 +74,7 @@ api(){
 	read -p "请输入muKey(在你的配置文件中 默认marisn):" WEBAPI_TOKEN
 	read -p "请输入测速周期(回车默认为每6小时测速):" SPEEDTEST
 	read -p "请输入你的节点编号(非常重要，必须填，不能回车):  " NODE_ID
+	node_install_start
 	cd /root/shadowsocks
 	echo -e "modify Config.py...\n"
 	WEBAPI_URL=${WEBAPI_URL:-"http://${IPAddress}"}
@@ -88,7 +89,7 @@ api(){
 	sed -i '/NODE_ID/c \NODE_ID = '${NODE_ID}'' ${config}
 }
 db(){
-	node_install_start
+    clear
 	# 取消文件数量限制
 	sed -i '$a * hard nofile 512000\n* soft nofile 512000' /etc/security/limits.conf
 	echo -e "如果以下手动配置错误，请在${config}手动编辑修改"
@@ -98,6 +99,7 @@ db(){
 	read -p "请输入你的数据库用户名(默认root):" MYSQL_USER
 	read -p "请输入你的数据库密码(默认root):" MYSQL_PASS
 	read -p "请输入你的节点编号(非常重要，必须填，不能回车):  " NODE_ID
+	node_install_start
 	cd /root/shadowsocks
 	echo -e "modify Config.py...\n"
 	sed -i '/API_INTERFACE/c \API_INTERFACE = '\'glzjinmod\''' ${config}
