@@ -47,23 +47,6 @@ function check_system(){
 	exit 0;
 	fi
 }
-check_system
-echo -e "\033[1;5;31m请选择对接模式：\033[0m"
-echo -e "1.API对接模式"
-echo -e "2.数据库对接模式"
-read -p "选择：" NODE_MS
-case $NODE_MS in
-		1)
-			api
-			;;
-		2)
-			db
-			;;
-		*)
-		    echo -e "请选择正确对接模式"
-			exit 1
-			;;
-esac
 function node_install_start(){
 yum -y groupinstall "Development Tools"
 yum install unzip zip git iptables -y
@@ -131,6 +114,24 @@ sed -i '/MYSQL_PORT/c \MYSQL_PORT = '${MYSQL_PORT}'' ${config}
 NODE_ID=${NODE_ID:-"3"}
 sed -i '/NODE_ID/c \NODE_ID = '${NODE_ID}'' ${config}
 }
+clear
+check_system
+echo -e "\033[1;5;31m请选择对接模式：\033[0m"
+echo -e "1.API对接模式"
+echo -e "2.数据库对接模式"
+read -p "选择：" NODE_MS
+case $NODE_MS in
+		1)
+			api
+			;;
+		2)
+			db
+			;;
+		*)
+		    echo -e "请选择正确对接模式"
+			exit 1
+			;;
+esac
 #关闭CentOS7的防火墙
 systemctl stop firewalld.service
 systemctl disable firewalld.service
