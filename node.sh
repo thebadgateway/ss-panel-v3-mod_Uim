@@ -22,7 +22,7 @@ Notification="${Yellow}[Notification]${Font}"
 #IP and config
 IPAddress=`wget http://members.3322.org/dyndns/getip -O - -q ; echo`;
 config="/root/shadowsocks/userapiconfig.py"
-function check_system(){
+check_system(){
 	if [[ -f /etc/redhat-release ]]; then
 		release="centos"
 	elif cat /etc/issue | grep -q -E -i "debian"; then
@@ -47,72 +47,72 @@ function check_system(){
 	exit 0;
 	fi
 }
-function node_install_start(){
-yum -y groupinstall "Development Tools"
-yum install unzip zip git iptables -y
-yum update nss curl iptables -y
-wget --no-check-certificate https://download.libsodium.org/libsodium/releases/libsodium-1.0.16.tar.gz
-tar xf libsodium-1.0.16.tar.gz && cd libsodium-1.0.16
-./configure && make -j2 && make install
-echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
-ldconfig
-cd /root
-yum -y install python-setuptools
-easy_install pip
-git clone -b manyuser https://github.com/esdeathlove/shadowsocks.git "/root/shadowsocks"
-cd shadowsocks
-pip install -r requirements.txt
-cp apiconfig.py userapiconfig.py
-cp config.json user-config.json
+node_install_start(){
+	yum -y groupinstall "Development Tools"
+	yum install unzip zip git iptables -y
+	yum update nss curl iptables -y
+	wget --no-check-certificate https://download.libsodium.org/libsodium/releases/libsodium-1.0.16.tar.gz
+	tar xf libsodium-1.0.16.tar.gz && cd libsodium-1.0.16
+	./configure && make -j2 && make install
+	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
+	ldconfig
+	cd /root
+	yum -y install python-setuptools
+	easy_install pip
+	git clone -b manyuser https://github.com/esdeathlove/shadowsocks.git "/root/shadowsocks"
+	cd shadowsocks
+	pip install -r requirements.txt
+	cp apiconfig.py userapiconfig.py
+	cp config.json user-config.json
 }
-function api(){
-node_install_start
-# 取消文件数量限制
-sed -i '$a * hard nofile 512000\n* soft nofile 512000' /etc/security/limits.conf
-echo -e "如果以下手动配置错误，请在${config}手动编辑修改"
-read -p "请输入你的对接域名或IP(例如:http://www.baidu.com 默认为本机对接): " WEBAPI_URL
-read -p "请输入muKey(在你的配置文件中 默认marisn):" WEBAPI_TOKEN
-read -p "请输入测速周期(回车默认为每6小时测速):" SPEEDTEST
-read -p "请输入你的节点编号(非常重要，必须填，不能回车):  " NODE_ID
-cd /root/shadowsocks
-echo -e "modify Config.py...\n"
-WEBAPI_URL=${WEBAPI_URL:-"http://${IPAddress}"}
-sed -i '/WEBAPI_URL/c \WEBAPI_URL = '\'${WEBAPI_URL}\''' ${config}
-#sed -i "s#https://zhaoj.in#${WEBAPI_URL}#" /root/shadowsocks/userapiconfig.py
-WEBAPI_TOKEN=${WEBAPI_TOKEN:-"marisn"}
-sed -i '/WEBAPI_TOKEN/c \WEBAPI_TOKEN = '\'${WEBAPI_TOKEN}\''' ${config}
-#sed -i "s#glzjin#${WEBAPI_TOKEN}#" /root/shadowsocks/userapiconfig.py
-SPEEDTEST=${SPEEDTEST:-"6"}
-sed -i '/SPEED/c \SPEEDTEST = '${SPEEDTEST}'' ${config}
-NODE_ID=${NODE_ID:-"3"}
-sed -i '/NODE_ID/c \NODE_ID = '${NODE_ID}'' ${config}
+api(){
+	node_install_start
+	# 取消文件数量限制
+	sed -i '$a * hard nofile 512000\n* soft nofile 512000' /etc/security/limits.conf
+	echo -e "如果以下手动配置错误，请在${config}手动编辑修改"
+	read -p "请输入你的对接域名或IP(例如:http://www.baidu.com 默认为本机对接): " WEBAPI_URL
+	read -p "请输入muKey(在你的配置文件中 默认marisn):" WEBAPI_TOKEN
+	read -p "请输入测速周期(回车默认为每6小时测速):" SPEEDTEST
+	read -p "请输入你的节点编号(非常重要，必须填，不能回车):  " NODE_ID
+	cd /root/shadowsocks
+	echo -e "modify Config.py...\n"
+	WEBAPI_URL=${WEBAPI_URL:-"http://${IPAddress}"}
+	sed -i '/WEBAPI_URL/c \WEBAPI_URL = '\'${WEBAPI_URL}\''' ${config}
+	#sed -i "s#https://zhaoj.in#${WEBAPI_URL}#" /root/shadowsocks/userapiconfig.py
+	WEBAPI_TOKEN=${WEBAPI_TOKEN:-"marisn"}
+	sed -i '/WEBAPI_TOKEN/c \WEBAPI_TOKEN = '\'${WEBAPI_TOKEN}\''' ${config}
+	#sed -i "s#glzjin#${WEBAPI_TOKEN}#" /root/shadowsocks/userapiconfig.py
+	SPEEDTEST=${SPEEDTEST:-"6"}
+	sed -i '/SPEED/c \SPEEDTEST = '${SPEEDTEST}'' ${config}
+	NODE_ID=${NODE_ID:-"3"}
+	sed -i '/NODE_ID/c \NODE_ID = '${NODE_ID}'' ${config}
 }
-function db(){
-node_install_start
-# 取消文件数量限制
-sed -i '$a * hard nofile 512000\n* soft nofile 512000' /etc/security/limits.conf
-echo -e "如果以下手动配置错误，请在${config}手动编辑修改"
-read -p "请输入你的对接数据库IP(例如:127.0.0.1 如果是本机请直接回车): " MYSQL_HOST
-read -p "请输入你的数据库名称(默认sspanel):" MYSQL_DB
-read -p "请输入你的数据库端口(默认3306):" MYSQL_PORT
-read -p "请输入你的数据库用户名(默认root):" MYSQL_USER
-read -p "请输入你的数据库密码(默认root):" MYSQL_PASS
-read -p "请输入你的节点编号(非常重要，必须填，不能回车):  " NODE_ID
-cd /root/shadowsocks
-echo -e "modify Config.py...\n"
-sed -i '/API_INTERFACE/c \API_INTERFACE = '\'glzjinmod\''' ${config}
-MYSQL_HOST=${MYSQL_HOST:-"${IPAddress}"}
-sed -i '/MYSQL_HOST/c \MYSQL_HOST = '\'${MYSQL_HOST}\''' ${config}
-MYSQL_DB=${MYSQL_DB:-"sspanel"}
-sed -i '/MYSQL_DB/c \MYSQL_DB = '\'${MYSQL_DB}\''' ${config}
-MYSQL_USER=${MYSQL_USER:-"root"}
-sed -i '/MYSQL_USER/c \MYSQL_USER = '\'${MYSQL_USER}\''' ${config}
-MYSQL_PASS=${MYSQL_PASS:-"root"}
-sed -i '/MYSQL_PASS/c \MYSQL_PASS = '\'${MYSQL_PASS}\''' ${config}
-MYSQL_PORT=${MYSQL_PORT:-"3306"}
-sed -i '/MYSQL_PORT/c \MYSQL_PORT = '${MYSQL_PORT}'' ${config}
-NODE_ID=${NODE_ID:-"3"}
-sed -i '/NODE_ID/c \NODE_ID = '${NODE_ID}'' ${config}
+db(){
+	node_install_start
+	# 取消文件数量限制
+	sed -i '$a * hard nofile 512000\n* soft nofile 512000' /etc/security/limits.conf
+	echo -e "如果以下手动配置错误，请在${config}手动编辑修改"
+	read -p "请输入你的对接数据库IP(例如:127.0.0.1 如果是本机请直接回车): " MYSQL_HOST
+	read -p "请输入你的数据库名称(默认sspanel):" MYSQL_DB
+	read -p "请输入你的数据库端口(默认3306):" MYSQL_PORT
+	read -p "请输入你的数据库用户名(默认root):" MYSQL_USER
+	read -p "请输入你的数据库密码(默认root):" MYSQL_PASS
+	read -p "请输入你的节点编号(非常重要，必须填，不能回车):  " NODE_ID
+	cd /root/shadowsocks
+	echo -e "modify Config.py...\n"
+	sed -i '/API_INTERFACE/c \API_INTERFACE = '\'glzjinmod\''' ${config}
+	MYSQL_HOST=${MYSQL_HOST:-"${IPAddress}"}
+	sed -i '/MYSQL_HOST/c \MYSQL_HOST = '\'${MYSQL_HOST}\''' ${config}
+	MYSQL_DB=${MYSQL_DB:-"sspanel"}
+	sed -i '/MYSQL_DB/c \MYSQL_DB = '\'${MYSQL_DB}\''' ${config}
+	MYSQL_USER=${MYSQL_USER:-"root"}
+	sed -i '/MYSQL_USER/c \MYSQL_USER = '\'${MYSQL_USER}\''' ${config}
+	MYSQL_PASS=${MYSQL_PASS:-"root"}
+	sed -i '/MYSQL_PASS/c \MYSQL_PASS = '\'${MYSQL_PASS}\''' ${config}
+	MYSQL_PORT=${MYSQL_PORT:-"3306"}
+	sed -i '/MYSQL_PORT/c \MYSQL_PORT = '${MYSQL_PORT}'' ${config}
+	NODE_ID=${NODE_ID:-"3"}
+	sed -i '/NODE_ID/c \NODE_ID = '${NODE_ID}'' ${config}
 }
 clear
 check_system
