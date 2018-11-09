@@ -201,7 +201,7 @@ function install_centos_ssr(){
 	ldconfig
 	#清理文件
 	cd /root && rm -rf libsodium*
-	git clone -b manyuser https://github.com/glzjin/shadowsocks.git "/root/shadowsocks"
+	git clone -b manyuser https://github.com/esdeathlove/shadowsocks.git "/root/shadowsocks"
 	cd /root/shadowsocks
 	chkconfig supervisord on
 	#第一次安装
