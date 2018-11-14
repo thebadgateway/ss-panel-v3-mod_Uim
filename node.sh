@@ -39,6 +39,8 @@ check_system(){
 		release="centos"
     fi
 	bit=`uname -m`
+	#res = $(cat /etc/redhat-release | awk '{print $4}')
+	#if [[ ${release} == "centos" ]] && [[ ${bit} == "x86_64" ]] && [[ ${res} -ge 7 ]]; then
 	if [[ ${release} == "centos" ]] && [[ ${bit} == "x86_64" ]]; then
 	echo -e "你的系统为[${release} ${bit}],检测${Green} 可以 ${Font}搭建。"
 	else 
@@ -121,7 +123,7 @@ check_system
 echo -e "\033[1;5;31m请选择对接模式：\033[0m"
 echo -e "1.API对接模式"
 echo -e "2.数据库对接模式"
-read -p "选择：" NODE_MS
+read -t 30 -p "选择：" NODE_MS
 case $NODE_MS in
 		1)
 			api
@@ -143,13 +145,16 @@ iptables -X
 iptables -I INPUT -p tcp -m tcp --dport 22:65535 -j ACCEPT
 iptables -I INPUT -p udp -m udp --dport 22:65535 -j ACCEPT
 iptables-save >/etc/sysconfig/iptables
-echo 'iptables-restore /etc/sysconfig/iptables' >> /etc/rc.local
-chmod +x /etc/rc.d/rc.local
 #开启SS
-cd /root/shadowsocks && chmod +x *.sh && ./run.sh
+cd /root/shadowsocks && chmod +x *.sh
+nohup /root/shadowsocks/run.sh > /dev/null 2>&1 & #后台运行shadowsocks
+echo 'iptables-restore /etc/sysconfig/iptables' >> /etc/rc.local
+echo 'nohup /root/shadowsocks/run.sh > /dev/null 2>&1 &' >> /etc/rc.local
+chmod +x /etc/rc.d/rc.local && chmod +x /etc/rc.local
 if [[ `ps -ef | grep server.py |grep -v grep | wc -l` -ge 1 ]];then
 	echo -e "${OK} ${GreenBG} 后端已启动 ${Font}"
 else
 	echo -e "${OK} ${RedBG} 后端未启动 ${Font}"
+	echo -e "请检查是否为Centos 7.x系统、检查配置文件是否正确、检查是否代码错误请反馈"
 	exit 1
 fi
