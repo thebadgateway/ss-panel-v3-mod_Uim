@@ -75,7 +75,7 @@ api(){
 	read -p "请输入你的对接域名或IP(例如:http://www.baidu.com 默认为本机对接): " WEBAPI_URL
 	read -p "请输入muKey(在你的配置文件中 默认marisn):" WEBAPI_TOKEN
 	read -p "请输入测速周期(回车默认为每6小时测速):" SPEEDTEST
-	read -p "请输入你的节点编号(非常重要，必须填，不能回车):  " NODE_ID
+	read -p "请输入你的节点编号(回车默认为节点ID 3):  " NODE_ID
 	node_install_start
 	cd /root/shadowsocks
 	echo -e "modify Config.py...\n"
@@ -100,7 +100,7 @@ db(){
 	read -p "请输入你的数据库端口(默认3306):" MYSQL_PORT
 	read -p "请输入你的数据库用户名(默认root):" MYSQL_USER
 	read -p "请输入你的数据库密码(默认root):" MYSQL_PASS
-	read -p "请输入你的节点编号(非常重要，必须填，不能回车):  " NODE_ID
+	read -p "请输入你的节点编号(回车默认为节点ID 3):  " NODE_ID
 	node_install_start
 	cd /root/shadowsocks
 	echo -e "modify Config.py...\n"
