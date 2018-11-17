@@ -43,9 +43,10 @@ function install_ss_panel_mod_UIm(){
 	#克隆项目 官方dev版本
 	git clone https://github.com/NimaQu/ss-panel-v3-mod_Uim.git tmp && mv tmp/.git . && rm -rf tmp && git reset --hard
 	#复制配置文件
-	cp config/.config.php.example config/.config.php
+	# cp config/.config.php.example config/.config.php
 	#修改配置文件
-	wget -c --no-check-certificate https://raw.githubusercontent.com/marisn2017/ss-panel-v3-mod_Uim/master/revise.sh && bash revise.sh
+	# wget -c --no-check-certificate https://raw.githubusercontent.com/marisn2017/ss-panel-v3-mod_Uim/master/revise.sh && bash revise.sh
+	wget -N -P /home/wwwroot/default/config/ -c --no-check-certificate "https://raw.githubusercontent.com/marisn2017/ss-panel-v3-mod_Uim/master/config_new.sh" -O .config.php
 	#移除防跨站攻击(open_basedir)
 	cd /home/wwwroot/default
 	chattr -i .user.ini

@@ -147,9 +147,9 @@ iptables -I INPUT -p udp -m udp --dport 22:65535 -j ACCEPT
 iptables-save >/etc/sysconfig/iptables
 #开启SS
 cd /root/shadowsocks && chmod +x *.sh
-nohup /root/shadowsocks/run.sh > /dev/null 2>&1 & #后台运行shadowsocks
+./run.sh #后台运行shadowsocks
 echo 'iptables-restore /etc/sysconfig/iptables' >> /etc/rc.local
-echo 'nohup /root/shadowsocks/run.sh > /dev/null 2>&1 &' >> /etc/rc.local
+echo 'bash /root/shadowsocks/run.sh' >> /etc/rc.local
 chmod +x /etc/rc.d/rc.local && chmod +x /etc/rc.local
 if [[ `ps -ef | grep server.py |grep -v grep | wc -l` -ge 1 ]];then
 	echo -e "${OK} ${GreenBG} 后端已启动 ${Font}"
