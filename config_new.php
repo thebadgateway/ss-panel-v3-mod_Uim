@@ -4,26 +4,27 @@
   搭建问题可联系QQ209224407打赏解决
 
 */
-
 //注释里请勿使用英文方括号、分号、单引号，否则迁移Config时会出错
 
 //基本设置--------------------------------------------------------------------------------------------
-$System_Config['key'] = '209224407';			//!!! 瞎 jb 修改此key为随机字符串确保网站安全 !!!
-$System_Config['debug'] =  'false';					//正式环境请确保为 false
-$System_Config['appName'] = 'sspanel';				//站点名称
-$System_Config['baseUrl'] = 'http://url.com';		//站点地址
-$System_Config['appStartTime'] = '2018';			//站点成立时间，显示在页脚 copyright 部分
-$System_Config['muKey'] = 'marisn';					//用于校验ss-go mu的请求，可以随意修改，但请保持前后端一致
-$System_Config['db_driver'] = 'mysql';				//数据库程序
-$System_Config['db_host'] = 'localhost';			//数据库地址
-$System_Config['db_database'] = 'sspanel';			//数据库名
-$System_Config['db_username'] = 'root';				//数据库用户名
-$System_Config['db_password'] = 'root';			//用户名对应的密码
+$System_Config['key'] = '209224407';						//!!! 瞎 jb 修改此key为随机字符串确保网站安全 !!!
+$System_Config['debug'] =  'false';								//正式环境请确保为 false
+$System_Config['appName'] = 'sspanel';							//站点名称
+$System_Config['baseUrl'] = 'http://url.com';					//站点地址
+$System_Config['subUrl'] = $System_Config['baseUrl'].'/link/';	//订阅地址
+$System_Config['appStartTime'] = '2018';						//站点成立时间，显示在页脚 copyright 部分
+$System_Config['muKey'] = 'marisn';								//用于校验ss-go mu的请求，可以随意修改，但请保持前后端一致
+$System_Config['db_driver'] = 'mysql';							//数据库程序
+$System_Config['db_host'] = 'localhost';						//数据库地址
+$System_Config['db_database'] = 'sspanel';						//数据库名
+$System_Config['db_username'] = 'root';							//数据库用户名
+$System_Config['db_password'] = 'root';						//用户名对应的密码
 
 
 //邮件设置--------------------------------------------------------------------------------------------
-$System_Config['mailDriver'] = 'mailgun';	// mailgun or smtp or sendgrid 选择发送邮件的方式
-$System_Config['sendPageLimit']= 50;      //发信分页 解决大站发公告超时问题
+$System_Config['mailDriver'] = 'none';	//发送邮件方式：none / mailgun / smtp / sendgrid 
+$System_Config['sendPageLimit']= 50;	//发信分页 解决大站发公告超时问题
+
 # mailgun
 $System_Config['mailgun_key'] = '';
 $System_Config['mailgun_domain'] = '';
@@ -84,8 +85,8 @@ $System_Config['email_verify_iplimit']='10';		//验证码有效期内，单IP可
 
 //已注册用户设置---------------------------------------------------------------------------------------
 #基础
-$System_Config['checkinMin'] = '100';				//用户签到最少流量 单位MB
-$System_Config['checkinMax'] = '500';			//用户签到最多流量
+$System_Config['checkinMin'] = '1';				//用户签到最少流量 单位MB
+$System_Config['checkinMax'] = '50';			//用户签到最多流量
 $System_Config['auto_clean_uncheck_days']='-1';	//自动清理多少天没签到的0级用户，小于等于0时关闭
 $System_Config['auto_clean_unused_days']='-1';	//自动清理多少天没使用的0级用户，小于等于0时关闭
 $System_Config['auto_clean_min_money']='1';		//余额低于多少的0级用户可以被清理
@@ -101,7 +102,7 @@ $System_Config['account_expire_delete_days']='-1';		//账户到期几天之后�
 $System_Config['enable_kill']='true';					//是否允许用户注销账户
 $System_Config['notify_limit_mode'] = 'false';			//false为关闭，per为按照百分比提醒，mb为按照固定剩余流量提醒
 $System_Config['notify_limit_value'] = '20';			//当上一项为per时，此处填写百分比；当上一项为mb时，此处填写流量
-$System_Config['mergeSub'] = false;			  //合并订阅设置 可选项 false / true
+$System_Config['mergeSub'] = false;						//合并订阅设置 可选项 false / true
 
 
 //Telegram bot设置------------------------------------------------------------------------------------
@@ -220,6 +221,11 @@ $System_Config['flag_regex']='/.*?(?=\s)/';		//从站点全名中匹配【国家
 #捐赠
 $System_Config['enable_donate']='false';	//是否显示用户捐赠（所有收入将被公开）
 
+#iOS账户显示
+$System_Config['display_ios_class']='-1';	//至少等级为多少的用户可以看见，小于0时关闭此功能
+$System_Config['ios_account']='';			//iOS账户
+$System_Config['ios_password']='';			//iOS密码
+
 
 //节点检测-----------------------------------------------------------------------------------------------
 #GFW检测，请通过crontab进行【开启/关闭】
@@ -278,11 +284,6 @@ $System_Config['radius_db_user']='';
 $System_Config['radius_db_password']='';
 $System_Config['radius_secret']='';			//Radius连接密钥
 
-#多说设置
-$System_Config['enable_duoshuo']='false';	//是否开启多说
-$System_Config['duoshuo_shortname']="";
-$System_Config['duoshuo_apptoken']="";
-
 #Wecenter设置
 $System_Config['enable_wecenter']='false';			//是否开启Wecenter
 $System_Config['wecenter_db_host']='localhost';		//以下4项为Wecenter数据库设置
@@ -316,6 +317,7 @@ $System_Config['enable_analytics_code']='false';
 if ( isset($_SERVER["HTTP_X_FORWARDED_FOR"]) ) {
 $list = explode("," , $_SERVER["HTTP_X_FORWARDED_FOR"]);
 $_SERVER["REMOTE_ADDR"] = $list[0];
+//注释里请勿使用英文方括号、分号、单引号，否则迁移Config时会出错
 
 //config迁移附注（由开发者填写本次config迁移后需要注意的地方，站长勿动）
 //如需换行，直接换行即可，无需换行符
@@ -330,6 +332,5 @@ enable_class_expire_reset_traffic 重命名为 class_expire_reset_traffic
 现在，用户账户过期时，流量会被强制重置为0
 ';
 $System_Config['version']='0';	//仅当涉及【需要修改config以外的文件】时才需要+1，站长勿动
-
 
 }
