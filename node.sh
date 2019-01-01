@@ -4,6 +4,7 @@
 #美国 VIP节点1 - 10G带宽
 #check root
 [ $(id -u) != "0" ] && { echo "错误: 您必须以root用户运行此脚本"; exit 1; }
+rm -rf node*
 #常规变量设置
 #fonts color
 Green="\033[32m" 
@@ -20,8 +21,19 @@ Error="${Red}[Error]${Font}"
 Notification="${Yellow}[Notification]${Font}"
 
 #IP and config
-IPAddress=`wget http://members.3322.org/dyndns/getip -O - -q ; echo`;
+#IPAddress=`wget http://members.3322.org/dyndns/getip -O - -q ; echo`;
 config="/root/shadowsocks/userapiconfig.py"
+get_ip() {
+	ip=$(curl -s https://ipinfo.io/ip)
+	[[ -z $ip ]] && ip=$(curl -s https://api.ip.sb/ip)
+	[[ -z $ip ]] && ip=$(curl -s https://api.ipify.org)
+	[[ -z $ip ]] && ip=$(curl -s https://ip.seeip.org)
+	[[ -z $ip ]] && ip=$(curl -s https://ifconfig.co/ip)
+	[[ -z $ip ]] && ip=$(curl -s https://api.myip.com | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}")
+	[[ -z $ip ]] && ip=$(curl -s icanhazip.com)
+	[[ -z $ip ]] && ip=$(curl -s myip.ipip.net | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}")
+	[[ -z $ip ]] && echo -e "\n 这小鸡鸡还是割了吧！\n" && exit
+}
 check_system(){
 	if [[ -f /etc/redhat-release ]]; then
 		release="centos"
@@ -79,7 +91,8 @@ api(){
 	node_install_start
 	cd /root/shadowsocks
 	echo -e "modify Config.py...\n"
-	WEBAPI_URL=${WEBAPI_URL:-"http://${IPAddress}"}
+	get_ip
+	WEBAPI_URL=${WEBAPI_URL:-"http://${ip}"}
 	sed -i '/WEBAPI_URL/c \WEBAPI_URL = '\'${WEBAPI_URL}\''' ${config}
 	#sed -i "s#https://zhaoj.in#${WEBAPI_URL}#" /root/shadowsocks/userapiconfig.py
 	WEBAPI_TOKEN=${WEBAPI_TOKEN:-"marisn"}
@@ -104,8 +117,9 @@ db(){
 	node_install_start
 	cd /root/shadowsocks
 	echo -e "modify Config.py...\n"
+	get_ip
 	sed -i '/API_INTERFACE/c \API_INTERFACE = '\'glzjinmod\''' ${config}
-	MYSQL_HOST=${MYSQL_HOST:-"${IPAddress}"}
+	MYSQL_HOST=${MYSQL_HOST:-"${ip}"}
 	sed -i '/MYSQL_HOST/c \MYSQL_HOST = '\'${MYSQL_HOST}\''' ${config}
 	MYSQL_DB=${MYSQL_DB:-"sspanel"}
 	sed -i '/MYSQL_DB/c \MYSQL_DB = '\'${MYSQL_DB}\''' ${config}
