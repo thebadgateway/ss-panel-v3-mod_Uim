@@ -12,7 +12,7 @@ $System_Config['debug'] =  'false';								//正式环境请确保为 false
 $System_Config['appName'] = 'sspanel';							//站点名称
 $System_Config['baseUrl'] = 'http://url.com';					//站点地址
 $System_Config['subUrl'] = $System_Config['baseUrl'].'/link/';	//订阅地址
-$System_Config['appStartTime'] = '2018';						//站点成立时间，显示在页脚 copyright 部分
+//$System_Config['appStartTime'] = '2018';						//站点成立时间，显示在页脚 copyright 部分
 $System_Config['muKey'] = 'marisn';								//用于校验ss-go mu的请求，可以随意修改，但请保持前后端一致
 $System_Config['db_driver'] = 'mysql';							//数据库程序
 $System_Config['db_host'] = 'localhost';						//数据库地址
@@ -76,6 +76,7 @@ $System_Config['mu_regex']='%5m%id.%suffix';				//单端口多用户混淆参数
 $System_Config['inviteNum'] = '10';			//注册后的邀请链接可用次数
 $System_Config['invite_get_money']='1';		//新用户通过私人邀请链接注册时，获得奖励金额（作为初始资金）
 $System_Config['invite_price']='-1';		//用户购买邀请码所需要的价格，价格小于0时视为不开放购买
+$System_Config['custom_invite_price']='-1';		//用户定制邀请码所需要的价格，价格小于0时视为不开放购买
 
 #邮箱验证
 $System_Config['enable_email_verify']='false';		//是否启用注册邮箱验证码
@@ -85,8 +86,8 @@ $System_Config['email_verify_iplimit']='10';		//验证码有效期内，单IP可
 
 //已注册用户设置---------------------------------------------------------------------------------------
 #基础
-$System_Config['checkinMin'] = '1';				//用户签到最少流量 单位MB
-$System_Config['checkinMax'] = '50';			//用户签到最多流量
+$System_Config['checkinMin'] = '512';				//用户签到最少流量 单位MB
+$System_Config['checkinMax'] = '1024';			//用户签到最多流量
 $System_Config['auto_clean_uncheck_days']='-1';	//自动清理多少天没签到的0级用户，小于等于0时关闭
 $System_Config['auto_clean_unused_days']='-1';	//自动清理多少天没使用的0级用户，小于等于0时关闭
 $System_Config['auto_clean_min_money']='1';		//余额低于多少的0级用户可以被清理
@@ -97,7 +98,7 @@ $System_Config['port_price']='-1';				//用户随机重置端口所需要的价�
 $System_Config['port_price_specify']='-1';		//用户指明钦定端口所需要的价格，价格小于0时视为不开放购买
 
 #高级
-$System_Config['class_expire_reset_traffic']='0';		//等级到期时重置为的流量值，单位GB，最小为0
+$System_Config['class_expire_reset_traffic']='0';		//等级到期时重置为的流量值，单位GB，小于0时不重置
 $System_Config['account_expire_delete_days']='-1';		//账户到期几天之后会删除账户，小于0时不删除
 $System_Config['enable_kill']='true';					//是否允许用户注销账户
 $System_Config['notify_limit_mode'] = 'false';			//false为关闭，per为按照百分比提醒，mb为按照固定剩余流量提醒
@@ -118,6 +119,7 @@ $System_Config['telegram_qrcode']='zxing_local';	//二维码解码方式，onlin
 $System_Config['telegram_request_token']='';		//Telegram 机器人请求Key，随意设置，由大小写英文和数字组成，更新这个参数之后请 php xcat setTelegram
 $System_Config['enable_welcome_message']='true';	//机器人发送欢迎消息
 $System_Config['finance_public']='false';			//财务报告是否向Telegram群公开
+$System_Config['telegram_grouplink']='';           //telegram群邀请链接
 
 
 //沟通设置--------------------------------------------------------------------------------------------
@@ -128,56 +130,36 @@ $System_Config['crisp_id']='null';			//客服系统ID ID查看路径：crisp.cha
 #工单系统设置
 $System_Config['enable_ticket']='true';		//是否开启工单系统
 
-#站长联系方式设置
-$System_Config['enable_admin_contact']='false';			//是否开启站长联系方式
+#管理员联系方式设置
+$System_Config['enable_admin_contact']='false';			//是否开启管理员联系方式
 $System_Config['admin_contact1'] = 'QQ：1233456';		//QQ、邮箱、微信仅用于举例
 $System_Config['admin_contact2'] = '邮箱123456@qq.com';	//也可以写电话、tg等其他联系方式
 $System_Config['admin_contact3'] = '微信～123456';		//没有格式要求，想怎么写就怎么写，可留空
 
 
 //验证码设置------------------------------------------------------------------------------------------
-#自己去 Geetest.com 申请
-$System_Config['geetest_id']='';
-$System_Config['geetest_key']='';
-$System_Config['enable_geetest_reg']='false';		//启用注册验证码
-$System_Config['enable_geetest_login']='false';		//启用登录验证码
-$System_Config['enable_geetest_checkin']='false';	//启用签到验证码
+
+$System_Config['captcha_provider'] = 'recaptcha';		//取值 recaptcha | geetest(极验)
+
+$System_Config['recaptcha_sitekey'] = '';
+$System_Config['recaptcha_secret'] = '';
+
+$System_Config['geetest_id'] = '';
+$System_Config['geetest_key'] = '';
+
+$System_Config['enable_reg_captcha'] = 'false';		//启用注册验证码
+$System_Config['enable_login_captcha'] = 'false';	//启用登录验证码
+$System_Config['enable_checkin_captcha'] = 'false';	//启用签到验证码
 
 
 //支付系统设置----------------------------------------------------------------------------------------
-#取值 none | codepay | doiampay | trimepay | f2fpay | yftpay | chenAlipay | paymentwall | spay | f2fpay_codepay
+#取值 none | codepay | trimepay | f2fpay | yftpay | chenAlipay | paymentwall | spay
 $System_Config['payment_system']='none';
 
 #codepay码支付
 #wiki地址:https://goo.gl/dRwRDi  http://t.cn/RnsWjtB
-$System_Config['codepay_id']='';	//码支付ID
-$System_Config['codepay_key']='';	//码支付通信密钥
-
-#doiampay,https://www.daimiyun.cn/register.php?aff=624
-$System_Config['doiampay']=[
-    'enabled' => [
-        'wepay'=>1,   // 微信支付1 启用 0 关闭
-        'alipay'=>1,  // 支付宝1 启用 0 关闭
-        'qqpay'=>1,   // QQ支付1 启用 0 关闭
-    ],
-    'mchdata' => [
-        'wepay'=>[
-            'mchid' => 188888888,   // 商户号
-            'phone' => 18888888888, //手机号
-            'token' => "example"    //安全验证码
-        ],
-        'alipay'=>[
-            'mchid' => 188888888,   // 商户号
-            'phone' => 188888888,   //手机号
-            'token' => "188888888"  // 安全验证码
-        ],
-        'qqpay'=>[
-            'mchid' => 188888888,   // 商户号
-            'phone' => 188888888,   //手机号
-            'token' => "188888888"  // 安全验证码
-        ],
-    ]
-];
+$System_Config['codepay_id']='';					//码支付ID
+$System_Config['codepay_key']='';					//码支付通信密钥
 
 #alipay,f2fpay
 $System_Config['f2fpay_app_id']='';
@@ -205,9 +187,9 @@ $System_Config['zfbjk_pid']='';
 $System_Config['zfbjk_key']='';
 $System_Config['zfbjk_qrcodeurl']='';
 
-#Trimepay https://portal.trimepay.com
-$System_Config['trimepay_appid']='';		//AppID
-$System_Config['trimepay_secret']='';		//AppSecret
+#Trimepay https://portal.trimepay.com/#/auth/register/134
+$System_Config['trimepay_appid']='';				//AppID
+$System_Config['trimepay_secret']='';				//AppSecret
 
 
 //其他面板显示设置------------------------------------------------------------------------------------------
@@ -249,18 +231,18 @@ $System_Config['v2ray_level']='0';
 #杂项
 $System_Config['enable_login_bind_ip']='false';		//是否将登陆线程和IP绑定
 $System_Config['authDriver'] = 'cookie';			//不能更改此项
-$System_Config['salt'] = '';						// 密码加密用，请留空
-$System_Config['sessionDriver'] = 'cookie';			//  可选: cookie,redis
-$System_Config['cacheDriver'] = 'cookie';			//  可选: cookie,redis
-$System_Config['tokenDriver'] = 'db';				//  可选: db,redis
+$System_Config['salt'] = '';						//密码加密用，请留空
+$System_Config['sessionDriver'] = 'cookie';			//可选: cookie,redis
+$System_Config['cacheDriver'] = 'cookie';			//可选: cookie,redis
+$System_Config['tokenDriver'] = 'db';				//可选: db,redis
 $System_Config['jump_delay']='1200';				//跳转延时，单位ms，不建议太长
-$System_Config['theme']    = 'material';			// 主题
+$System_Config['theme']    = 'material';			//主题
 $System_Config['pacp_offset']='-20000';				//VPN 端口偏移
 $System_Config['pacpp_offset']='-20000';
 $System_Config['Speedtest_duration']='6';			//显示多长时间的测速记录
 $System_Config['login_warn']='false';				//异地登陆提示
-$System_Config['timeZone'] = 'PRC';					// PRC 天朝时间  UTC 格林时间
-$System_Config['pwdMethod'] = 'sha256';				// 密码加密   可选 md5,sha256
+$System_Config['timeZone'] = 'PRC';					//PRC 天朝时间  UTC 格林时间
+$System_Config['pwdMethod'] = 'sha256';				//密码加密   可选 md5,sha256，argon2i（argon2i需要至少php7.2）
 $System_Config['db_charset'] = 'utf8';
 $System_Config['db_collation'] = 'utf8_general_ci';
 $System_Config['db_prefix'] = '';
@@ -277,29 +259,18 @@ $System_Config['redis_database'] = '0';
 $System_Config['redis_password']="";
 
 #Radius设置
-$System_Config['enable_radius']='false';	//是否开启Radius
-$System_Config['radius_db_host']='';		//以下4项为Radius数据库设置
+$System_Config['enable_radius']='false';			//是否开启Radius
+$System_Config['radius_db_host']='';				//以下4项为Radius数据库设置
 $System_Config['radius_db_database']='';
 $System_Config['radius_db_user']='';
 $System_Config['radius_db_password']='';
-$System_Config['radius_secret']='';			//Radius连接密钥
+$System_Config['radius_secret']='';					//Radius连接密钥
 
-#Wecenter设置
-$System_Config['enable_wecenter']='false';			//是否开启Wecenter
-$System_Config['wecenter_db_host']='localhost';		//以下4项为Wecenter数据库设置
-$System_Config['wecenter_db_database']='';
-$System_Config['wecenter_db_user']='';
-$System_Config['wecenter_db_password']='';
-$System_Config['wecenter_system_main_domain']='';	//系统根域名 zhaoj.in 这样
-$System_Config['wecenter_cookie_prefix']='mmg_';	//G_COOKIE_PREFIX
-$System_Config['wecenter_cookie_key']='';			//G_COOKIE_HASH_KEY
-$System_Config['wecenter_url']='';					//访问路径，不开启这个功能的话就清空这个设置项吧
-													//可从安装好的 wecenter 目录下的 system/config.inc.php 得到
 #Cloudxns
-$System_Config['enable_cloudxns']='false';		//是否开启Cloudxns
-$System_Config['cloudxns_apikey']='';			//自己去 cloudxns.net 申请
+$System_Config['enable_cloudxns']='false';			//是否开启Cloudxns
+$System_Config['cloudxns_apikey']='';				//自己去 cloudxns.net 申请
 $System_Config['cloudxns_apisecret']='';
-$System_Config['cloudxns_domain']='zhaoj.in';	//你的域名
+$System_Config['cloudxns_domain']='zhaoj.in';		//你的域名
 
 #Cloudflare
 $System_Config['cloudflare_enable']='false';										//是否开启 Cloudflare 解析
@@ -317,6 +288,7 @@ $System_Config['enable_analytics_code']='false';
 if ( isset($_SERVER["HTTP_X_FORWARDED_FOR"]) ) {
 $list = explode("," , $_SERVER["HTTP_X_FORWARDED_FOR"]);
 $_SERVER["REMOTE_ADDR"] = $list[0];
+}
 //注释里请勿使用英文方括号、分号、单引号，否则迁移Config时会出错
 
 //config迁移附注（由开发者填写本次config迁移后需要注意的地方，站长勿动）
@@ -330,7 +302,7 @@ enable_auto_clean_uncheck 和 enable_auto_clean_uncheck_days 合并为 auto_clea
 enable_account_expire_delete 和 enable_account_expire_delete_days 合并为account_expire_delete_days
 enable_class_expire_reset_traffic 重命名为 class_expire_reset_traffic
 现在，用户账户过期时，流量会被强制重置为0
+enable_geetest_* 已变更为 enable_*_captcha
+
 ';
 $System_Config['version']='0';	//仅当涉及【需要修改config以外的文件】时才需要+1，站长勿动
-
-}
