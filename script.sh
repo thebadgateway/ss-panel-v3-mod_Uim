@@ -201,7 +201,7 @@ function install_centos_ssr(){
 	ldconfig
 	#清理文件
 	cd /root && rm -rf libsodium*
-	git clone -b manyuser https://github.com/shadowsocksr-backup/shadowsocksr.git "/root/shadowsocks"
+	git clone -b manyuser https://github.com/NimaQu/shadowsocks.git "/root/shadowsocks"
 	cd /root/shadowsocks
 	chkconfig supervisord on
 	#第一次安装
@@ -248,7 +248,7 @@ function install_ubuntu_ssr(){
 	apt-get install python-pip git -y
 	pip install cymysql
 	cd /root
-	git clone -b manyuser https://github.com/glzjin/shadowsocks.git "/root/shadowsocks"
+	git clone -b manyuser https://github.com/NimaQu/shadowsocks.git "/root/shadowsocks"
 	cd shadowsocks
 	pip install -r requirements.txt
 	chmod +x *.sh
