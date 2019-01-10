@@ -23,7 +23,7 @@ Libtest(){
 	echo "$LIB_PING $LIB" >> ping.pl
 	libAddr=`sort -V ping.pl|sed -n '1p'|awk '{print $2}'`
 	if [ "$libAddr" == "$GIT" ];then
-		libAddr='https://raw.githubusercontent.com/mmmwhy/ss-panel-and-ss-py-mu/master/libsodium-1.0.13.tar.gz'
+		libAddr='https://raw.githubusercontent.com/marisn2017/ss-panel-v3-mod_Uim/master/libsodium-1.0.13.tar.gz'
 	else
 		libAddr='https://download.libsodium.org/libsodium/releases/libsodium-1.0.13.tar.gz'
 	fi
@@ -220,7 +220,7 @@ install_node(){
 	# 启用supervisord
 	supervisorctl shutdown
 	#某些机器没有echo_supervisord_conf 
-	wget -N -P  /etc/ --no-check-certificate  https://raw.githubusercontent.com/mmmwhy/ss-panel-and-ss-py-mu/master/supervisord.conf
+	wget -N -P  /etc/ --no-check-certificate  https://raw.githubusercontent.com/marisn2017/ss-panel-v3-mod_Uim/master/supervisord.conf	
 	supervisord
 	#iptables
 	iptables -F
@@ -297,7 +297,7 @@ install_node_db(){
 	# 启用supervisord
 	supervisorctl shutdown
 	#某些机器没有echo_supervisord_conf 
-	wget -N -P  /etc/ --no-check-certificate  https://raw.githubusercontent.com/mmmwhy/ss-panel-and-ss-py-mu/master/supervisord.conf
+	wget -N -P  /etc/ --no-check-certificate  https://raw.githubusercontent.com/marisn2017/ss-panel-v3-mod_Uim/master/supervisord.conf	
 	supervisord
 	#iptables
 	iptables -F
