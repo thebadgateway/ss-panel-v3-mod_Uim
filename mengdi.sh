@@ -1,6 +1,7 @@
 #!/bin/bash
 #Check Root
 [ $(id -u) != "0" ] && { echo "Error: You must be root to run this script"; exit 1; }
+rm -rf mengdi*
 config="/root/shadowsocks/userapiconfig.py"
 get_ip() {
 	ip=$(curl -s https://ipinfo.io/ip)
