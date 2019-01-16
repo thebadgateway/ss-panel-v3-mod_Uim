@@ -76,6 +76,7 @@ node_install_start(){
 	git clone -b manyuser https://github.com/NimaQu/shadowsocks.git "/root/shadowsocks"
 	cd shadowsocks
 	pip install -r requirements.txt
+	pip install cymysql
 	cp apiconfig.py userapiconfig.py
 	cp config.json user-config.json
 }
@@ -165,6 +166,7 @@ cd /root/shadowsocks && chmod +x *.sh
 echo 'iptables-restore /etc/sysconfig/iptables' >> /etc/rc.local
 echo 'bash /root/shadowsocks/run.sh' >> /etc/rc.local
 chmod +x /etc/rc.d/rc.local && chmod +x /etc/rc.local
+cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime -r >/dev/null 2>&1
 if [[ `ps -ef | grep server.py |grep -v grep | wc -l` -ge 1 ]];then
 	echo -e "${OK} ${GreenBG} 后端已启动 ${Font}"
 else
