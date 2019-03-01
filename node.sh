@@ -66,7 +66,7 @@ node_install_start(){
 	yum install unzip zip git iptables -y
 	yum update nss curl iptables -y
 	wget --no-check-certificate https://download.libsodium.org/libsodium/releases/libsodium-1.0.17.tar.gz
-	tar xf libsodium-1.0.16.tar.gz && cd libsodium-1.0.16
+	tar xf libsodium-1.0.17.tar.gz && cd libsodium-1.0.17
 	./configure && make -j2 && make install
 	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 	ldconfig
