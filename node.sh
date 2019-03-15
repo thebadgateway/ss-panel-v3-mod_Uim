@@ -167,6 +167,18 @@ echo 'iptables-restore /etc/sysconfig/iptables' >> /etc/rc.local
 echo 'bash /root/shadowsocks/run.sh' >> /etc/rc.local
 chmod +x /etc/rc.d/rc.local && chmod +x /etc/rc.local
 cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime -r >/dev/null 2>&1
+clear
+echo -e "${GreenBG} 载入后端简易守护程序中...请稍后... ${Font}"
+sleep 2
+echo 'if [[ `ps -ef | grep server.py |grep -v grep | wc -l` -ge 1 ]];then
+echo "后端运行中...";
+else
+cd /root/shadowsocks;bash run.sh;
+fi' > /root/shadowsocks/monitoring.sh
+chmod +x /root/shadowsocks/monitoring.sh
+yum -y install vixie-cron crontabs
+echo '*/5 * * * * /bin/bash /root/shadowsocks/monitoring.sh' >> /var/spool/cron/root
+/sbin/service crond restart
 if [[ `ps -ef | grep server.py |grep -v grep | wc -l` -ge 1 ]];then
 	echo -e "${OK} ${GreenBG} 后端已启动 ${Font}"
 else
