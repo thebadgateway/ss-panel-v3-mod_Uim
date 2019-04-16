@@ -161,7 +161,7 @@ iptables -I INPUT -p tcp -m tcp --dport 22:65535 -j ACCEPT
 iptables -I INPUT -p udp -m udp --dport 22:65535 -j ACCEPT
 iptables-save >/etc/sysconfig/iptables
 #删除libsodium
-rm -rf libsodium*
+cd /root && rm -rf libsodium*
 #开启SS
 cd /root/shadowsocks && chmod +x *.sh
 ./run.sh #后台运行shadowsocks
