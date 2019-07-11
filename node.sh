@@ -1,11 +1,11 @@
 #!/bin/bash
-#注意节点名称这里，一定要按照如下的格式来填写：
-#香港 普通节点1 - 100M带宽
-#美国 VIP节点1 - 10G带宽
+#Note the node name here, be sure to fill in the following format:
+#Hong Kong Node 1 - 100M Bandwidth
+#United States VIP node 1 - 10G bandwidth
 #check root
-[ $(id -u) != "0" ] && { echo "错误: 您必须以root用户运行此脚本"; exit 1; }
+[ $(id -u) != "0" ] && { echo "Error: You must run this script as root"; exit 1; }
 rm -rf node*
-#常规变量设置
+#General variable settings
 #fonts color
 Green="\033[32m" 
 Red="\033[31m" 
@@ -32,7 +32,7 @@ get_ip() {
 	[[ -z $ip ]] && ip=$(curl -s https://api.myip.com | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}")
 	[[ -z $ip ]] && ip=$(curl -s icanhazip.com)
 	[[ -z $ip ]] && ip=$(curl -s myip.ipip.net | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}")
-	[[ -z $ip ]] && echo -e "\n 这小鸡鸡还是割了吧！\n" && exit
+	[[ -z $ip ]] && echo -e "\n This chicken is still cut!\n" && exit
 }
 check_system(){
 	if [[ -f /etc/redhat-release ]]; then
@@ -54,10 +54,10 @@ check_system(){
 	#res = $(cat /etc/redhat-release | awk '{print $4}')
 	#if [[ ${release} == "centos" ]] && [[ ${bit} == "x86_64" ]] && [[ ${res} -ge 7 ]]; then
 	if [[ ${release} == "centos" ]] && [[ ${bit} == "x86_64" ]]; then
-	echo -e "你的系统为[${release} ${bit}],检测${Green} 可以 ${Font}搭建。"
+	echo -e "Your system is[${release} ${bit}],Detection${Green} can ${Font}Build."
 	else 
-	echo -e "你的系统为[${release} ${bit}],检测${Red} 不可以 ${Font}搭建。"
-	echo -e "${Yellow} 正在退出脚本... ${Font}"
+	echo -e "Your system is[${release} ${bit}],Detection${Red} not can ${Font}Build."
+	echo -e "${Yellow} Exiting script... ${Font}"
 	exit 0;
 	fi
 }
@@ -82,13 +82,13 @@ node_install_start(){
 }
 api(){
     clear
-	# 取消文件数量限制
+	# Cancel file limit
 	sed -i '$a * hard nofile 512000\n* soft nofile 512000' /etc/security/limits.conf
-	echo -e "如果以下手动配置错误，请在${config}手动编辑修改"
-	read -p "请输入你的对接域名或IP(例如:http://www.baidu.com 默认为本机对接): " WEBAPI_URL
-	read -p "请输入muKey(在你的配置文件中 默认marisn):" WEBAPI_TOKEN
-	read -p "请输入测速周期(回车默认为每6小时测速):" SPEEDTEST
-	read -p "请输入你的节点编号(回车默认为节点ID 3):  " NODE_ID
+	echo -e "If the following manual configuration error, please manually edit the changes in ${config}"
+	read -p "Please enter your docking domain name or IP (for example: http://www.baidu.com defaults to native docking):" WEBAPI_URL
+	read -p "Please enter muKey (default marisn in your configuration file):" WEBAPI_TOKEN
+	read -p "Please enter the speed measurement cycle (the default is to test the speed every 6 hours):" SPEEDTEST
+	read -p "Please enter your node number (Enter default is node ID 3):" NODE_ID
 	node_install_start
 	cd /root/shadowsocks
 	echo -e "modify Config.py...\n"
@@ -106,15 +106,15 @@ api(){
 }
 db(){
     clear
-	# 取消文件数量限制
+	# Cancel file limit
 	sed -i '$a * hard nofile 512000\n* soft nofile 512000' /etc/security/limits.conf
-	echo -e "如果以下手动配置错误，请在${config}手动编辑修改"
-	read -p "请输入你的对接数据库IP(例如:127.0.0.1 如果是本机请直接回车): " MYSQL_HOST
-	read -p "请输入你的数据库名称(默认sspanel):" MYSQL_DB
-	read -p "请输入你的数据库端口(默认3306):" MYSQL_PORT
-	read -p "请输入你的数据库用户名(默认root):" MYSQL_USER
-	read -p "请输入你的数据库密码(默认root):" MYSQL_PASS
-	read -p "请输入你的节点编号(回车默认为节点ID 3):  " NODE_ID
+	echo -e "If the following manual configuration error, please manually edit the changes in ${config}"
+	read -p "Please enter your docking database IP (for example: 127.0.0.1 If you are the machine, please press Enter):" MYSQL_HOST
+	read -p "Please enter your database name (default sspanel):" MYSQL_DB
+	read -p "Please enter your database port (default 3306):" MYSQL_PORT
+	read -p "Please enter your database username (default root):" MYSQL_USER
+	read -p "Please enter your database password (default root):" MYSQL_PASS
+	read -p "Please enter your node number (Enter default is node ID 3):" NODE_ID
 	node_install_start
 	cd /root/shadowsocks
 	echo -e "modify Config.py...\n"
@@ -135,10 +135,10 @@ db(){
 }
 clear
 check_system
-echo -e "\033[1;5;31m请选择对接模式：\033[0m"
-echo -e "1.API对接模式"
-echo -e "2.数据库对接模式"
-read -t 30 -p "选择：" NODE_MS
+echo -e "\033[1;5;Please select the docking mode:\033[0m"
+echo -e "1.API docking mode"
+echo -e "2.Database docking mode"
+read -t 30 -p "Select:" NODE_MS
 case $NODE_MS in
 		1)
 			api
@@ -147,11 +147,11 @@ case $NODE_MS in
 			db
 			;;
 		*)
-		    echo -e "请选择正确对接模式"
+		    echo -e "Please select the correct docking mode"
 			exit 1
 			;;
 esac
-#关闭CentOS7的防火墙
+#Turn off the firewall of CentOS7
 systemctl stop firewalld.service
 systemctl disable firewalld.service
 #iptables
@@ -160,9 +160,9 @@ iptables -X
 iptables -I INPUT -p tcp -m tcp --dport 22:65535 -j ACCEPT
 iptables -I INPUT -p udp -m udp --dport 22:65535 -j ACCEPT
 iptables-save >/etc/sysconfig/iptables
-#删除libsodium
+#Remove libsodium
 cd /root && rm -rf libsodium*
-#开启SS
+#Open SS
 cd /root/shadowsocks && chmod +x *.sh
 ./run.sh #后台运行shadowsocks
 echo 'iptables-restore /etc/sysconfig/iptables' >> /etc/rc.local
@@ -170,10 +170,10 @@ echo 'bash /root/shadowsocks/run.sh' >> /etc/rc.local
 chmod +x /etc/rc.d/rc.local && chmod +x /etc/rc.local
 cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime -r >/dev/null 2>&1
 clear
-echo -e "${GreenBG} 载入后端简易守护程序中...请稍后... ${Font}"
+echo -e "${GreenBG} Load the backend simple daemon... please wait... ${Font}"
 sleep 2
 echo 'if [[ `ps -ef | grep server.py |grep -v grep | wc -l` -ge 1 ]];then
-echo "后端运行中...";
+echo "Backend running...";
 else
 cd /root/shadowsocks;bash run.sh;
 fi' > /root/shadowsocks/monitoring.sh
@@ -182,9 +182,9 @@ yum -y install vixie-cron crontabs
 echo '*/5 * * * * /bin/bash /root/shadowsocks/monitoring.sh' >> /var/spool/cron/root
 /sbin/service crond restart
 if [[ `ps -ef | grep server.py |grep -v grep | wc -l` -ge 1 ]];then
-	echo -e "${OK} ${GreenBG} 后端已启动 ${Font}"
+	echo -e "${OK} ${GreenBG} The backend has started ${Font}"
 else
-	echo -e "${OK} ${RedBG} 后端未启动 ${Font}"
-	echo -e "请检查是否为Centos 7.x系统、检查配置文件是否正确、检查是否代码错误请反馈"
+	echo -e "${OK} ${RedBG} The backend is not started ${Font}"
+	echo -e "Please check if it is a Centos 7.x system, check if the configuration file is correct, check if the code is wrong, please feedback"
 	exit 1
 fi
