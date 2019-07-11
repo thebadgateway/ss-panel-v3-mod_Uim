@@ -111,7 +111,7 @@ error_detect_depends(){
 pre_install_docker_compose(){
     # Set ssrpanel_url
     echo "Please sspanel_url"
-    read -p "(Please enter the docking url of your website here, such as http://www.baidu.com or http://127.0.0.1):" ssrpanel_url
+    read -p "(Please enter the docking url of your website here, such as http://www.baidu.com or http://127.0.0.1):  " ssrpanel_url
     [ -z "${ssrpanel_url}" ]
     echo
     echo "---------------------------"
@@ -120,7 +120,7 @@ pre_install_docker_compose(){
     echo
     # Set ssrpanel key
     echo "sspanel key"
-    read -p "(Enter the token in the configuration file here, ie the key value):" ssrpanel_key
+    read -p "(Enter the token in the configuration file here, ie the key value):  " ssrpanel_key
     [ -z "${ssrpanel_key}" ]
     echo
     echo "---------------------------"
@@ -130,7 +130,7 @@ pre_install_docker_compose(){
 
     # Set ssrpanel speedtest function
     echo "use sspanel speedtest"
-    read -p "(Speed measurement cycle: Please press here, the default is not speed)" ssrpanel_speedtest
+    read -p "(Speed measurement cycle Please press here, the default is not speed):  " ssrpanel_speedtest
     [ -z "${ssrpanel_speedtest}" ] && ssrpanel_speedtest="false"
     echo
     echo "---------------------------"
@@ -140,7 +140,7 @@ pre_install_docker_compose(){
 
     # Set ssrpanel node_id
     echo "sspanel node_id"
-    read -p "(Please enter the background docking node ID here, no default value):" ssrpanel_node_id
+    read -p "(Please enter the background docking node ID here, no default value):  " ssrpanel_node_id
     [ -z "${ssrpanel_node_id}" ]
     echo
     echo "---------------------------"
@@ -153,7 +153,7 @@ pre_install_caddy(){
 
     # Set caddy v2ray domain
     echo "caddy v2ray domain"
-    read -p "(Please enter the docking domain name, such as www.baidu.com):" v2ray_domain
+    read -p "(Please enter the docking domain name, such as www.baidu.com):  " v2ray_domain
     [ -z "${v2ray_domain}" ]
     echo
     echo "---------------------------"
@@ -164,7 +164,7 @@ pre_install_caddy(){
 
     # Set caddy v2ray path
     echo "caddy v2ray path"
-    read -p "(Default password: /v2ray [Default carriage return]):" v2ray_path
+    read -p "(Default password: /v2ray [Default carriage return]):  " v2ray_path
     [ -z "${v2ray_path}" ] && v2ray_path="/v2ray"
     echo
     echo "---------------------------"
@@ -174,7 +174,7 @@ pre_install_caddy(){
 
     # Set caddy v2ray tls email
     echo "caddy v2ray tls email"
-    read -p "(Please enter your email address for ssl, no default):" v2ray_email
+    read -p "(Please enter your email address for ssl, no default):  " v2ray_email
     [ -z "${v2ray_email}" ]
     echo
     echo "---------------------------"
@@ -223,7 +223,7 @@ config_caddy_docker_cloudflare(){
 
     # Set caddy cloudflare ddns email
     echo "caddy cloudflare ddns email"
-    read -p "(No default ):" cloudflare_email
+    read -p "(No default ):  " cloudflare_email
     [ -z "${cloudflare_email}" ]
     echo
     echo "---------------------------"
@@ -233,7 +233,7 @@ config_caddy_docker_cloudflare(){
 
     # Set caddy cloudflare ddns key
     echo "caddy cloudflare ddns key"
-    read -p "(No default ):" cloudflare_key
+    read -p "(No default ):  " cloudflare_key
     [ -z "${cloudflare_email}" ]
     echo
     echo "---------------------------"
@@ -299,7 +299,7 @@ install_select(){
     clear
     while true
     do
-    echo  "Which v2ray Docker you'd select:"
+    echo  "Which v2ray Docker you'd select:  "
     for ((i=1;i<=${#software[@]};i++ )); do
         hint="${software[$i-1]}"
         echo -e "${green}${i}${plain}) ${hint}"
@@ -423,7 +423,7 @@ install_v2ray(){
 clear
 while true
 do
-echo  "Which operation you'd select:"
+echo  "Which operation you'd select:  "
 for ((i=1;i<=${#operation[@]};i++ )); do
     hint="${operation[$i-1]}"
     echo -e "${green}${i}${plain}) ${hint}"
