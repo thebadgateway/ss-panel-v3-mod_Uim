@@ -310,9 +310,9 @@ function install_node(){
 	sed -i '/NODE_ID/c \NODE_ID = '${NODE_ID}'' ${config}
 	#sed -i '2d' /root/shadowsocks/userapiconfig.py
 	#sed -i "2a\NODE_ID = ${NODE_ID}" /root/shadowsocks/userapiconfig.py
-	# 启用supervisord守护
+	# Enable supervisord daemon
 	supervisorctl shutdown
-	#某些机器没有echo_supervisord_conf
+	#Some machines don't have echo_supervisord_conf
 	wget -N -P  /etc/ --no-check-certificate  https://raw.githubusercontent.com/marisn2017/ss-panel-v3-mod_Uim/master/supervisord.conf	
 	supervisord
 	#iptables
@@ -336,7 +336,7 @@ function install_RS(){
      wget -N --no-check-certificate https://github.com/91yun/serverspeeder/raw/master/serverspeeder.sh && bash serverspeeder.sh
 }
 function NEW_NODE(){
-     wget -N --no-check-certificate  https://raw.githubusercontent.com/marisn2017/ss-panel-v3-mod_Uim/master/node.sh && bash node.sh
+     wget -N --no-check-certificate  https://raw.githubusercontent.com/thebadgateway/ss-panel-v3-mod_Uim/master/node.sh && bash node.sh
 }
 
 #Conventional variable
