@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#此脚本为十一二次修改注释脚本 版权：https://raw.githubusercontent.com/rico93/shadowsocks-munager
+#This script is an eleven-second modification comment script Copyright: https://raw.githubusercontent.com/rico93/shadowsocks-munager
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 
@@ -111,7 +111,7 @@ error_detect_depends(){
 pre_install_docker_compose(){
     # Set ssrpanel_url
     echo "Please sspanel_url"
-    read -p "(此处请输入您网站的对接url,如http://www.baidu.com或http://127.0.0.1):" ssrpanel_url
+    read -p "(Please enter the docking url of your website here, such as http://www.baidu.com or http://127.0.0.1):" ssrpanel_url
     [ -z "${ssrpanel_url}" ]
     echo
     echo "---------------------------"
@@ -120,7 +120,7 @@ pre_install_docker_compose(){
     echo
     # Set ssrpanel key
     echo "sspanel key"
-    read -p "(此处输入配置文件中的token,即key值):" ssrpanel_key
+    read -p "(Enter the token in the configuration file here, ie the key value):" ssrpanel_key
     [ -z "${ssrpanel_key}" ]
     echo
     echo "---------------------------"
@@ -130,7 +130,7 @@ pre_install_docker_compose(){
 
     # Set ssrpanel speedtest function
     echo "use sspanel speedtest"
-    read -p "(测速周期:此处请回车，默认不测速):" ssrpanel_speedtest
+    read -p "(Speed measurement cycle: Please press here, the default is not speed)" ssrpanel_speedtest
     [ -z "${ssrpanel_speedtest}" ] && ssrpanel_speedtest="false"
     echo
     echo "---------------------------"
@@ -140,7 +140,7 @@ pre_install_docker_compose(){
 
     # Set ssrpanel node_id
     echo "sspanel node_id"
-    read -p "(此处请输入后台对接节点ID,无默认值):" ssrpanel_node_id
+    read -p "(Please enter the background docking node ID here, no default value):" ssrpanel_node_id
     [ -z "${ssrpanel_node_id}" ]
     echo
     echo "---------------------------"
@@ -153,7 +153,7 @@ pre_install_caddy(){
 
     # Set caddy v2ray domain
     echo "caddy v2ray domain"
-    read -p "(请输入对接域名,如www.baidu.com):" v2ray_domain
+    read -p "(Please enter the docking domain name, such as www.baidu.com):" v2ray_domain
     [ -z "${v2ray_domain}" ]
     echo
     echo "---------------------------"
@@ -164,7 +164,7 @@ pre_install_caddy(){
 
     # Set caddy v2ray path
     echo "caddy v2ray path"
-    read -p "(Default password: /v2ray [默认回车]):" v2ray_path
+    read -p "(Default password: /v2ray [Default carriage return]):" v2ray_path
     [ -z "${v2ray_path}" ] && v2ray_path="/v2ray"
     echo
     echo "---------------------------"
@@ -174,7 +174,7 @@ pre_install_caddy(){
 
     # Set caddy v2ray tls email
     echo "caddy v2ray tls email"
-    read -p "(请输入您的邮箱地址,用于申请ssl,无默认值):" v2ray_email
+    read -p "(Please enter your email address for ssl, no default):" v2ray_email
     [ -z "${v2ray_email}" ]
     echo
     echo "---------------------------"
