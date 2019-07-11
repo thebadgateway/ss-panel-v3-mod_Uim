@@ -5,7 +5,7 @@
 #!/bin/bash
 
 #check root
-[ $(id -u) != "0" ] && { echo "错误: 您必须以root用户运行此脚本"; exit 1; }
+[ $(id -u) != "0" ] && { echo "Error: You must run this script as root"; exit 1; }
 function check_system(){
 	if [[ -f /etc/redhat-release ]]; then
 		release="centos"
@@ -24,10 +24,10 @@ function check_system(){
     fi
 	bit=`uname -m`
 	if [[ ${release} == "centos" ]] && [[ ${bit} == "x86_64" ]]; then
-	echo -e "你的系统为[${release} ${bit}],检测${Green} 可以 ${Font}搭建。"
+	echo -e "Your system is[${release} ${bit}],Detection${Green} can ${Font}Build."
 	else 
-	echo -e "你的系统为[${release} ${bit}],检测${Red} 不可以 ${Font}搭建。"
-	echo -e "${Yellow} 正在退出脚本... ${Font}"
+	echo -e "Your system is[${release} ${bit}],Detection${Red} not can ${Font}Build."
+	echo -e "${Yellow} Exiting script... ${Font}"
 	exit 0;
 	fi
 }
@@ -36,31 +36,31 @@ function install_ss_panel_mod_UIm(){
 	yum install unzip zip git -y
 	wget -c --no-check-certificate https://raw.githubusercontent.com/marisn2017/ss-panel-v3-mod_Uim/master/lnmp1.5.zip && unzip lnmp1.5.zip && rm -rf lnmp1.5.zip && cd lnmp1.5 && chmod +x install.sh && ./install.sh lnmp
 	cd /home/wwwroot/
-	cp -r default/phpmyadmin/ .  #复制数据库
+	cp -r default/phpmyadmin/ .  #Copy database
 	cd default
 	rm -rf index.html
 	yum update nss curl iptables -y
-	#克隆项目
+	#Cloning project
 	git clone https://github.com/marisn2017/ss-panel-v3-mod_Uim-resource.git tmp && mv tmp/.git . && rm -rf tmp && git reset --hard
-	#复制配置文件
+	#Copy configuration file
 	# cp config/.config.php.example config/.config.php
-	#移除防跨站攻击(open_basedir)
+	#Remove anti-cross-site attacks(open_basedir)
 	cd /home/wwwroot/default
 	chattr -i .user.ini
 	rm -rf .user.ini
 	sed -i 's/^fastcgi_param PHP_ADMIN_VALUE/#fastcgi_param PHP_ADMIN_VALUE/g' /usr/local/nginx/conf/fastcgi.conf
     /etc/init.d/php-fpm restart
     /etc/init.d/nginx reload
-	#设置文件权限
+	#Set file permissions
 	chown -R root:root *
 	chmod -R 777 *
 	chown -R www:www storage
-	#下载配置文件
+	#Download configuration file
 	wget -N -P  /usr/local/nginx/conf/ --no-check-certificate "https://raw.githubusercontent.com/marisn2017/ss-panel-v3-mod_Uim/master/nginx.conf"
 	wget -N -P /usr/local/php/etc/ --no-check-certificate "https://raw.githubusercontent.com/marisn2017/ss-panel-v3-mod_Uim/master/php.ini"
-	#开启scandir()函数
+	#Turn on the scandir() function
 	sed -i 's/,scandir//g' /usr/local/php/etc/php.ini
-	service nginx restart #重启Nginx
+	service nginx restart #Restart Nginx
 	# mysql -uroot -proot -e"create database sspanel;" 
 	# mysql -uroot -proot -e"use sspanel;" 
 	# mysql -uroot -proot sspanel < /home/wwwroot/default/sql/sspanel.sql
@@ -72,17 +72,17 @@ GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'root' WITH GRANT OPTION
 flush privileges;
 EOF
 	cd /home/wwwroot/default
-	#安装composer
+	#Install composer
 	php composer.phar install
 	mv tool/alipay-f2fpay vendor/
 	mv -f tool/cacert.pem vendor/guzzle/guzzle/src/Guzzle/Http/Resources/
 	#mv -f tool/autoload_classmap.php vendor/composer/
 	wget -N -P  /home/wwwroot/default/vendor/composer --no-check-certificate "https://raw.githubusercontent.com/marisn2017/ss-panel-v3-mod_Uim/master/autoload_classmap.php"
-	php xcat syncusers            #同步用户
-	php xcat initQQWry            #下载IP解析库
-	php xcat resetTraffic         #重置流量
-	php xcat initdownload         #下载ssr程式
-	#创建监控
+	php xcat syncusers            #Synchronize users
+	php xcat initQQWry            #Download IP Resolution Library
+	php xcat resetTraffic         #Reset traffic
+	php xcat initdownload         #Download ssr program
+	#Create monitoring
 	yum -y install vixie-cron crontabs
 	rm -rf /var/spool/cron/root
 	echo 'SHELL=/bin/bash' >> /var/spool/cron/root
@@ -95,14 +95,14 @@ EOF
 	/sbin/service crond restart
 	if [ -d "/home/wwwroot/default/" ];then
 	clear
-	echo "${Green}ss-panel-v3-mod_UIChanges安装成功~${Font}"
+	echo "${Green}ss-panel-v3-mod_UIChanges installed successfully~${Font}"
 	else
-	echo "${Red}安装失败，请格盘重装~${Font}"
+	echo "${Red}Installation failed, please reload the grid~${Font}"
 	fi
 }
 
 function Libtest(){
-	#自动选择下载节点
+	#Automatically select download nodes
 	GIT='raw.githubusercontent.com'
 	LIB='download.libsodium.org'
 	GIT_PING=`ping -c 1 -w 1 $GIT|grep time=|awk '{print $7}'|sed "s/time=//"`
@@ -126,7 +126,7 @@ function Get_Dist_Version()
     fi
 }
 function python_test(){
-	#测速决定使用哪个源
+	#Speed measurement determines which source to use
 	tsinghua='pypi.tuna.tsinghua.edu.cn'
 	pypi='mirror-ord.pypi.io'
 	doubanio='pypi.doubanio.com'
@@ -151,7 +151,7 @@ function python_test(){
 	fi
 	rm -f ping.pl
 }
-# 一键添加SS-panel节点
+# Add SS-panel nodes with one click
 function install_centos_ssr(){
 	cd /root
 	Get_Dist_Version
@@ -167,10 +167,10 @@ function install_centos_ssr(){
 	yum -y install git gcc python-setuptools lsof lrzsz python-devel libffi-devel openssl-devel iptables
 	yum -y update nss curl libcurl 
 	yum -y groupinstall "Development Tools" 
-	#第一次yum安装 supervisor pip
+	#First yum installation supervisor pip
 	yum -y install supervisor python-pip
 	supervisord
-	#第二次pip supervisor是否安装成功
+	#Whether the second pip supervisor is successfully installed
 	if [ -z "`pip`" ]; then
     curl -O https://bootstrap.pypa.io/get-pip.py
 		python get-pip.py 
@@ -180,7 +180,7 @@ function install_centos_ssr(){
     pip install supervisor
     supervisord
 	fi
-	#第三次检测pip supervisor是否安装成功
+	#Whether the third Detectionpip supervisor is successfully installed
 	if [ -z "`pip`" ]; then
 		if [ -z "`easy_install`"]; then
     wget http://peak.telecommunity.com/dist/ez_setup.py
@@ -199,19 +199,19 @@ function install_centos_ssr(){
 	./configure && make -j2 && make install
 	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 	ldconfig
-	#清理文件
+	#Clean up files
 	cd /root && rm -rf libsodium*
 	git clone -b manyuser https://github.com/NimaQu/shadowsocks.git "/root/shadowsocks"
 	cd /root/shadowsocks
 	chkconfig supervisord on
-	#第一次安装
+	#First installation
 	python_test
 	pip install -r requirements.txt -i $pyAddr	
-	#第二次检测是否安装成功
+	#Whether the second detection is successfully installed
 	if [ -z "`python -c 'import requests;print(requests)'`" ]; then
-		pip install -r requirements.txt #用自带的源试试再装一遍
+		pip install -r requirements.txt #Try to install it again with your own source.
 	fi
-	#第三次检测是否成功
+	#Whether the third detection is successful
 	if [ -z "`python -c 'import requests;print(requests)'`" ]; then
 	    cd /root && mkdir python && cd python
 		git clone https://github.com/shazow/urllib3.git && cd urllib3
@@ -252,7 +252,7 @@ function install_ubuntu_ssr(){
 	cd shadowsocks
 	pip install -r requirements.txt
 	chmod +x *.sh
-	# 配置程序
+	# Configuration program
 	cp apiconfig.py userapiconfig.py
 	cp config.json user-config.json
 }
@@ -287,13 +287,13 @@ function install_node(){
 			install_ubuntu_ssr
 		fi
 	}
-	# 取消文件数量限制
+	# Cancel file limit
 	sed -i '$a * hard nofile 512000\n* soft nofile 512000' /etc/security/limits.conf
-	echo -e "如果以下手动配置错误，请在${config}手动编辑修改"
-	read -p "请输入你的对接域名或IP(例如:http://www.baidu.com 如果是本机请直接回车): " WEBAPI_URL
-	read -p "请输入muKey(在你的配置文件中 如果是本机请直接回车):" WEBAPI_TOKEN
-	read -p "请输入测速周期(回车默认为每6小时测速):" SPEEDTEST
-	read -p "请输入你的节点编号(非常重要，必须填，不能回车):  " NODE_ID
+	echo -e "If the following manual configuration error, please manually edit the changes in ${config}"
+	read -p "Please enter your docking domain name or IP (for example: http://www.baidu.com If you are the machine, please press Enter): " WEBAPI_URL
+	read -p "Please enter muKey (in your configuration file, if it is this machine, please press Enter):" WEBAPI_TOKEN
+	read -p "Please enter the speed measurement cycle (the default is to test the speed every 6 hours):" SPEEDTEST
+	read -p "Please enter your node number (very important, must be filled, can't enter):" NODE_ID
 	install_ssr_for_each
 	IPAddress=`wget http://members.3322.org/dyndns/getip -O - -q ; echo`;
 	cd /root/shadowsocks
@@ -325,7 +325,7 @@ function install_node(){
 	echo "/usr/bin/supervisord -c /etc/supervisord.conf" >> /etc/rc.local
 	chmod +x /etc/rc.d/rc.local
 	echo "#############################################################"
-	echo "#          安装完成，节点即将重启使配置生效                 #"
+	echo "#          The installation is complete, the node is about to restart and the configuration takes effect.                 #"
 	echo "#############################################################"
 	reboot now
 }
@@ -339,7 +339,7 @@ function NEW_NODE(){
      wget -N --no-check-certificate  https://raw.githubusercontent.com/marisn2017/ss-panel-v3-mod_Uim/master/node.sh && bash node.sh
 }
 
-#常规变量
+#Conventional variable
 update_time="2018年11月10日21:14:00"
 config="/root/shadowsocks/userapiconfig.py"
 
@@ -364,18 +364,18 @@ rm -rf script*
 clear
 check_system
 sleep 2
-echo -e "脚本最后更新时间：${Green} ${update_time} ${Font}"
+echo -e "Last updated script:${Green} ${update_time} ${Font}"
 echo -e "\033[31m#############################################################\033[0m"
-echo -e "\033[32m#欢迎使用一键ss-panel-v3-mod_UIChanges搭建脚本 and 节点添加 #\033[0m"
+echo -e "\033[32m#Welcome to the one-click ss-panel-v3-mod_UIChanges build script and node add #\033[0m"
 echo -e "\033[34m#Blog: http://blog.67cc.cn/                                 #\033[0m"
-echo -e "\033[35m#请选择你要搭建的脚本：                                     #\033[0m"
-echo -e "\033[36m#1.  一键ss-panel-v3-mod_UIChanges搭建                      #\033[0m"
-echo -e "\033[31m#2.  一键添加SS-panel节点[新版]                             #\033[0m"
-echo -e "\033[36m#3.  一键添加SS-panel节点                                   #\033[0m"
-echo -e "\033[35m#4.  一键  BBR加速  搭建                                    #\033[0m"
-echo -e "\033[34m#5.  一键锐速破解版搭建                                     #\033[0m"
-echo -e "\033[33m#                                PS:建议先搭建加速再搭建面板#\033[0m"
-echo -e "\033[32m#                                   支持   Centos  7.x  系统#\033[0m"
+echo -e "\033[35m#Please select the script you want to build:                                     #\033[0m"
+echo -e "\033[36m#1.  One-click ss-panel-v3-mod_UIChanges to build                      #\033[0m"
+echo -e "\033[31m#2.  Add SS-panel node with one click [new version]                             #\033[0m"
+echo -e "\033[36m#3.  Add SS-panel nodes with one click                                   #\033[0m"
+echo -e "\033[35m#4.  One-click BBR acceleration build                                    #\033[0m"
+echo -e "\033[34m#5.  One-click sharp crack version build                                     #\033[0m"
+echo -e "\033[33m#                                PS: It is recommended to build an acceleration and then build the panel.#\033[0m"
+echo -e "\033[32m#                                   Support for Centos 7.x systems#\033[0m"
 echo -e "\033[31m#############################################################\033[0m"
 echo
 read num
@@ -395,6 +395,6 @@ elif [[ $num == "5" ]]
 then
 install_RS
 else 
-echo '输入错误';
+echo 'input error';
 exit 0;
 fi;
